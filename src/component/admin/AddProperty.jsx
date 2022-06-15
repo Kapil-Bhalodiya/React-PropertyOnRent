@@ -148,7 +148,7 @@ const Role = () => {
                                                
                                                 {object.amenitiesModel.amenitiesId === 1}
                                                     <ul style={{ display: 'flex' }}>
-                                                        <li><Input type='checkbox' className='aminitiesAdd-checkbox' value={object.subamenitiesId} />
+                                                        <li><Input type='checkbox' name="subAminitiesModel" className='aminitiesAdd-checkbox' value={object.subamenitiesId} />
                                                             <label>{object.subamenitiesName}</label></li>
                                                     </ul>
                                             </checkbox>

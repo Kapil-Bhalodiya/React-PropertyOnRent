@@ -1149,7 +1149,37 @@ img {
 .aminities-add i{
     color: #979ba8;
 } */
+.vendor-amenities{
+    display: flex;
+    letter-spacing: 0.1rem;
+    flex-wrap: wrap;
+}
 .aminitiesAdd-checkbox{
     padding: 0.6rem;
     margin:0rem 0.5rem 0rem 2rem;
+}
+
+/* ========================================================================
+
+==============S======W=========E=======T========A===========================
+
+============================================================================= */
+
+
+
+.card-propertytype{
+    position: absolute;
+    margin: auto;
+    margin-top: -7px;
+    left:30px;
+    font-size: 20px;
+    background-color: #ffffff;
+    padding: 8px 15px;
+    display: inline-block;
+    border-top: transparent;
+    border-radius: 4px;
+    font-weight: 500;
+    line-height: 20px;
+    z-index: 5;
+    color: #00c194;
 }

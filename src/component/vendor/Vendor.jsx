@@ -1,19 +1,23 @@
 import React from "react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Form, FormGroup, Input, Row, Col } from 'reactstrap';
-import ButtonSend from '../common/Button';
+import { Form, FormGroup, Input, Row, Col, Button } from 'reactstrap';
 import SideBar from "./common/SideBar";
-import contact from "../contact/Contact";
+
 
 export default function User() {
-    const u = JSON.parse(localStorage.getItem("user"))
     const [subamenities, setsubAmenities] = useState({});
     const [propertyType, setPropertyType] = useState({});
     const [state, setState] = useState({});
     const [city, setCity] = useState({});
     const [ifile, setFiles] = useState([]);
     const [amenites, setAmenities] = useState({});
+    const [addSubAmenites, setaddSubAmenities] = useState([]);
+    const [values, setValues] = useState([]);
+
+    const propertyAmenitiesModels = {
+
+    }
 
     useEffect(() => {
         axios.get("http://localhost:8078/subamenities/get")
@@ -36,7 +40,6 @@ export default function User() {
 
         axios.get("http://localhost:8078/amenities/get")
             .then(res => {
-                console.log("amenities : " + res.data)
                 setAmenities(res.data)
             })
             .catch(err => console.log(err));
@@ -52,22 +55,53 @@ export default function User() {
             .catch(err => console.error(err));
     }
 
-    const handleChange = () => {
+    const handleChange = (e) => {
+        setValues({ ...values, [e.target.name]: e.target.value })
+    }
 
+    const handleaddSubmenities = (e) => {
+        const { value, checked } = e.target;
+        setaddSubAmenities(prevState => ([
+            ...prevState,
+            {
+                subAmenities: {
+                    [e.target.name]: value
+                }
+            }
+        ]));
+        console.log(addSubAmenites);
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(" : Added Data : ");
+        console.log(values);
+        console.log(ifile);
+        console.log(addSubAmenites);
     }
     const uploadFile = (e) => {
-        var files = e.target.files;
-        const uploadedfiles = [];
-        console.log("length is : " + files.length)
-        for (let i = 0; i < files.length; i++) {
-            let myfile = files.item(i);
-            var filepath = "../images/" + myfile.name;
-            console.log(filepath)
-            uploadedfiles[i] = filepath
-        }
-        console.log(uploadedfiles)
-        setFiles([...ifile, uploadedfiles])
-        console.log("file is " + ifile)
+        // var files = e.target.files;
+        // const uploadedfiles = [];
+        // console.log("length is : " + files.length)
+        // for (let i = 0; i < files.length; i++) {
+        //     let myfile = files.item(i);
+        //     var filepath = "../images/" + myfile.name;
+        //     console.log(filepath)
+        //     uploadedfiles[i] = filepath
+        // }
+        // console.log(uploadedfiles)
+        // setFiles([...ifile, uploadedfiles])
+        console.log(e.target)
+        console.log(e.target.files[0].name)
+        setFiles(prevState => ([
+            ...prevState,
+            {
+                photoModel : {
+                    [e.target.name]: e.target.files[0].name
+                }
+            }
+        ]));
+        console.log(ifile)
     }
     return (
         <>
@@ -85,24 +119,24 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <Input type="text" class="form-control" placeholder='Property Title' />
+                                    <Input type="text" name="propertyName" class="form-control" placeholder='Property Title' onChange={handleChange}/>
                                 </Col>
                             </Row>
                         </FormGroup>
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <textarea type="text" placeholder="Decsription"></textarea>
+                                    <textarea type="text" name="description" placeholder="Decsription" onChange={handleChange}></textarea>
                                 </Col>
                             </Row>
                         </FormGroup>
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <Input type="text" name="firstname" placeholder="Price" />
+                                    <Input type="text" name="price" placeholder="Price" onChange={handleChange}/>
                                 </Col>
                                 <Col>
-                                    <Input type="text" placeholder="Area(Sq. ft)" />
+                                    <Input type="text" name="area" placeholder="Area(Sq. ft)" onChange={handleChange}/>
 
                                 </Col>
                             </Row>
@@ -110,10 +144,10 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <select className='custom-select' name="propertytype_id">
+                                    <select className='custom-select' name="propertytype_id" onChange={handleChange}>
                                         <option selected>Property Type</option>
                                         {Array.isArray(propertyType) && propertyType.map(obj => (
-                                            <option value={obj.propertyType_id}>{obj.propertytype_name}</option>
+                                            <option key={obj.propertyType_id} value={obj.value} >{obj.propertytype_name}</option>
                                         ))}
                                     </select>
                                 </Col>
@@ -123,10 +157,10 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <Input type="number" placeholder="Pincode" />
+                                    <Input type="number" name="pincode" placeholder="Pincode" onChange={selectionChange}/>
                                 </Col>
                                 <Col>
-                                    <Input type="text" name="Address" placeholder="Address" />
+                                    <Input type="text" name="Address" placeholder="Address" onChange={selectionChange}/>
                                 </Col>
                             </Row>
                         </FormGroup>
@@ -144,7 +178,7 @@ export default function User() {
                                     <select className='custom-select' name="city_id" onChange={handleChange}>
                                         <option selected>Select City</option>
                                         {Array.isArray(city) && city.map(object => (
-                                            <option key={object.city_id}>{object.city_name}</option>
+                                            <option value={object.city_id} >{object.city_name}</option>
                                         ))}
                                     </select>
                                 </Col>
@@ -154,7 +188,7 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <Input type='file' multiple onChange={uploadFile} />
+                                    <Input type='file' name="photopath" multiple onChange={uploadFile} />
                                 </Col>
                             </Row>
                         </FormGroup>
@@ -166,13 +200,13 @@ export default function User() {
                                     {Array.isArray(amenites) && amenites.map(amenitiesObj => (
                                         <>
                                             <h6>{amenitiesObj.amenitiesName}</h6>
-                                            <ul style={{display:'flex'}}>
+                                            <ul className="vendor-amenities">
                                                 {Array.isArray(subamenities) && subamenities.map(subamenitiesObj => (
                                                     <checkbox>
                                                         {subamenitiesObj.amenitiesModel.amenitiesId == amenitiesObj.amenitiesId ?
 
-                                                            <li><Input type='checkbox' className='aminitiesAdd-checkbox' />
-                                                                <label value={subamenitiesObj.subamenitiesId}>{subamenitiesObj.subamenitiesName}</label></li>
+                                                            <li><Input type='checkbox' name="subamenitiesId" className='aminitiesAdd-checkbox' value={subamenitiesObj.subamenitiesId} onChange={handleaddSubmenities} />
+                                                                <label>{subamenitiesObj.subamenitiesName}</label></li>
 
                                                             : ''}
                                                     </checkbox>
@@ -187,7 +221,7 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <ButtonSend title='Add' width='50%' height='50px' />
+                                    <Button style={{ width: '50%', height: '50px' }} onClick={handleSubmit}>Add</Button>
                                 </Col>
                             </Row>
                         </FormGroup>
