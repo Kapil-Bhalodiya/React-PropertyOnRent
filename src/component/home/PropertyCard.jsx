@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, CardImg, CardBody, CardSubtitle, CardText, CardTitle, Container} from 'reactstrap';
+import { Row, Col, Card, CardImg, CardBody, CardSubtitle, CardText, CardTitle, Container, Button} from 'reactstrap';
 // import pic from '../images/authentication/auth.svg';
 import about3 from '../images/about14.jpg';
 import getservice from '../../service/getPropertyApi';
 //import img from '../../../public/images1/Diamond Villa_1.jpg';
 import axios from 'axios';
+//import { Button } from 'bootstrap';
+import {useNavigate} from 'react-router-dom';
 
 export default function PropertyCard() {
+    const navigate = useNavigate()
     const [Property, setProprty] = useState([]);
     const image="";
     const getdata = async () =>  {
@@ -22,6 +25,12 @@ export default function PropertyCard() {
     useEffect(() => {
         getdata()
     },[])
+
+    const gotodetails=()=>{
+        console.log("helllo")
+        navigate("/detailproperty")
+    }
+
     return (
         <>
             <Container>
@@ -33,7 +42,7 @@ export default function PropertyCard() {
                 </Row>
                 <Row>
                         {Property.map((item, i) => (
-                              
+                            
                             <Card className='card-main' style={{width:"30%",margin:"1rem"}}>
                                 <CardImg
                                     alt={"/images1/"+item.photoModel[0].photopath}
@@ -60,6 +69,7 @@ export default function PropertyCard() {
                                         <i className="fa fa-address-card"></i>  {item.address}<br/>
                                         <br/>
                                     </CardText>
+                                    <Button onClick={gotodetails} propertyId={item.propertyId}>View Property</Button>
                                 </CardBody>
                             </Card>
                         ))}
