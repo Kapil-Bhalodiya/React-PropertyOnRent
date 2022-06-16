@@ -14,6 +14,10 @@ export default function User() {
     const [amenites, setAmenities] = useState({});
     const [addSubAmenites, setaddSubAmenities] = useState([]);
     const [values, setValues] = useState([]);
+    const [events, setEvents] = useState([]);
+    const [inputFields, setInputFields] = useState([
+        {packageName: '', packageDescription: '', rate: ''}
+    ])
 
     const propertyAmenitiesModels = {
 
@@ -40,7 +44,13 @@ export default function User() {
 
         axios.get("http://localhost:8078/amenities/get")
             .then(res => {
-                setAmenities(res.data)
+                setAmenities(res.data);
+            })
+            .catch(err => console.log(err));
+
+        axios.get("http://localhost:8078/events/get")
+            .then(res => {
+                setEvents(res.data);
             })
             .catch(err => console.log(err));
 
@@ -91,8 +101,6 @@ export default function User() {
         // }
         // console.log(uploadedfiles)
         // setFiles([...ifile, uploadedfiles])
-        console.log(e.target)
-        console.log(e.target.files[0].name)
         setFiles(prevState => ([
             ...prevState,
             {
@@ -126,7 +134,7 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <textarea type="text" name="description" placeholder="Decsription" onChange={handleChange}></textarea>
+                                    <textarea type="text" name="description"style={{height:200,background:'white'}} placeholder="Decsription" onChange={handleChange}></textarea>
                                 </Col>
                             </Row>
                         </FormGroup>
@@ -147,9 +155,16 @@ export default function User() {
                                     <select className='custom-select' name="propertytype_id" onChange={handleChange}>
                                         <option selected>Property Type</option>
                                         {Array.isArray(propertyType) && propertyType.map(obj => (
-                                            <option key={obj.propertyType_id} value={obj.value} >{obj.propertytype_name}</option>
+                                            <option value={obj.propertytype_id} >{obj.propertytype_name}</option>
                                         ))}
                                     </select>
+                                </Col>
+                            </Row>
+                        </FormGroup>
+                        <FormGroup>
+                            <Row>
+                                <Col>
+                                    <textarea type="text" name="policy" style={{height:200,background:'white'}} placeholder="Policy" onChange={handleChange}></textarea>
                                 </Col>
                             </Row>
                         </FormGroup>
@@ -196,7 +211,6 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-
                                     {Array.isArray(amenites) && amenites.map(amenitiesObj => (
                                         <>
                                             <h6>{amenitiesObj.amenitiesName}</h6>
@@ -204,7 +218,6 @@ export default function User() {
                                                 {Array.isArray(subamenities) && subamenities.map(subamenitiesObj => (
                                                     <checkbox>
                                                         {subamenitiesObj.amenitiesModel.amenitiesId == amenitiesObj.amenitiesId ?
-
                                                             <li><Input type='checkbox' name="subamenitiesId" className='aminitiesAdd-checkbox' value={subamenitiesObj.subamenitiesId} onChange={handleaddSubmenities} />
                                                                 <label>{subamenitiesObj.subamenitiesName}</label></li>
 
@@ -215,6 +228,42 @@ export default function User() {
 
                                         </>
                                     ))}
+                                </Col>
+                            </Row>
+                        </FormGroup>
+                        <h4>Events and Events Packages</h4>
+                        <FormGroup>
+                            <Row>
+                                <Col>
+                                {Array.isArray(events) && events.map(eventsObj => (
+                                     <ul className="vendor-amenities">
+                                            <checkbox>
+                                                <li><Input type='checkbox' name="eventsId" className='eventsAdd-checkbox' value={eventsObj.eventsId} onChange={handleaddSubmenities} />
+                                                    <label style={{marginLeft:10}}>{eventsObj.eventsName}</label></li>
+                                                    {inputFields.map((input, index) => {
+                                                        return (
+                                                            <Row key={index}>
+                                                            <Col><input
+                                                                name='packageName'
+                                                                placeholder='Event Package Name'
+                                                                value={input.packageName}
+                                                            /></Col>
+                                                            <Col><textarea
+                                                                name='packageDescription'
+                                                                placeholder='Event package Description'
+                                                                value={input.packageDescription}
+                                                            /></Col>
+                                                            <Col><input
+                                                                name='price'
+                                                                placeholder='Price'
+                                                                value={input.rate}
+                                                            /></Col>
+                                                            </Row>
+                                                        )
+                                                        })}
+                                            </checkbox>
+                                           </ul>
+                                ))}
                                 </Col>
                             </Row>
                         </FormGroup>
