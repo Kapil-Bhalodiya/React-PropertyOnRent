@@ -9,11 +9,17 @@ export default function ListProperty(props) {
 
     const {id} = useParams();
     const [propertyData, setProprtyData] = useState([]);
+    const [latestpropertyData, setLatestPropertyData] = useState([]);
 
     const getdata = async () => {
         console.log("this "+id)
         let res = await axios.get("http://localhost:8074/property/getall/"+id);
         setProprtyData(res.data);
+    }
+
+    const getlatestdata = async () => {
+        let res = await axios.get("http://localhost:8074/property/getlatestproperty");
+        setLatestPropertyData(res.data);
     }
 
     useEffect(() => {

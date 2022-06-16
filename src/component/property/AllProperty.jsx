@@ -16,17 +16,11 @@ export default function AllProperty() {
         setPropertyData(res.data);
     }
 
-    const selectionChange = () => {
-        axios.get("http://localhost:8074/property/getpropertyhighprice")
+    const selectionChange = (e) => {
+        axios.get("http://localhost:8074/property/getpropertypricewise/"+e.target.value)
         .then(res => {
             setPropertyData(res.data);
         }).catch(err => console.error(err));
-    }
-
-
-    const getselectionhighdata = async () => {
-        let res = await axios.get("http://localhost:8074/property/getpropertyhighprice");
-        setLatestPropertyData(res.data);
     }
 
     const getlatestdata = async () => {
@@ -113,11 +107,11 @@ export default function AllProperty() {
                                         <h5>Showing results</h5>
                                     </Col>
                                     <Col className="col-6" style={{ textAlign: 'right' }}>
-                                        <label style={{marginRight:"5px"}}>Sort by: </label>
+                                        <label style={{marginRight:"5px"}}>Sort by Price: </label>
                                         <select className="custom-select12" onChange={selectionChange}>
                                             <option id="option" value="1">Default</option>
-                                            <option className="option" value="2">Low to High</option>
-                                            <option className="option" value="3">High to Low</option>
+                                            <option className="option" value="2">Low to High Price</option>
+                                            <option className="option" value="3">High to Low Price</option>
                                         </select>
                                     </Col>
                                 </Row>
