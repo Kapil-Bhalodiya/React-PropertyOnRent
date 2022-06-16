@@ -1,8 +1,9 @@
 import React from "react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Form, FormGroup, Input, Row, Col, Button } from 'reactstrap';
+import { Form, FormGroup, Input, Row, Col, Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import SideBar from "./common/SideBar";
+// import Modal from "./Modal";
 
 
 export default function User() {
@@ -15,10 +16,9 @@ export default function User() {
     const [addSubAmenites, setaddSubAmenities] = useState([]);
     const [values, setValues] = useState([]);
     const [events, setEvents] = useState([]);
-    const [inputFields, setInputFields] = useState([
-        {packageName: '', packageDescription: '', rate: ''}
-    ])
-
+    const [passevents, setPassEvents] = useState({});
+    const [finalpassevents, setFinalPassEvents] = useState([]);
+    const [isShowing, setIsShowing] = useState(false);
     const propertyAmenitiesModels = {
 
     }
@@ -64,9 +64,32 @@ export default function User() {
             })
             .catch(err => console.error(err));
     }
-
     const handleChange = (e) => {
         setValues({ ...values, [e.target.name]: e.target.value })
+    }
+
+    const removeEvent = (index) => {
+        const updatedEvents = finalpassevents.filter((element,id)=>{
+            return index != id
+        })
+        setFinalPassEvents(updatedEvents);
+    }
+
+    const handleEventChange = (e) => {
+        setPassEvents(prevState => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }
+        ));
+    }
+
+    const handleEventModelChange = (e) => {
+        setPassEvents(prevState => ({
+            ...prevState,
+            eventsModel: {
+                eventsId: e.target.value
+            }
+        }));
     }
 
     const handleaddSubmenities = (e) => {
@@ -84,10 +107,10 @@ export default function User() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(" : Added Data : ");
         console.log(values);
         console.log(ifile);
         console.log(addSubAmenites);
+        console.log(finalpassevents);
     }
     const uploadFile = (e) => {
         // var files = e.target.files;
@@ -104,13 +127,20 @@ export default function User() {
         setFiles(prevState => ([
             ...prevState,
             {
-                photoModel : {
+                photoModel: {
                     [e.target.name]: e.target.files[0].name
                 }
             }
         ]));
         console.log(ifile)
     }
+
+
+
+    const handleEvent = (e) => {
+        setFinalPassEvents(finalpassevents => [...finalpassevents, passevents]);
+    }
+
     return (
         <>
             <Row className="col-12 topbar-vendor">
@@ -127,25 +157,24 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <Input type="text" name="propertyName" class="form-control" placeholder='Property Title' onChange={handleChange}/>
+                                    <Input type="text" name="propertyName" class="form-control" placeholder='Property Title' onChange={handleChange} />
                                 </Col>
                             </Row>
                         </FormGroup>
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <textarea type="text" name="description"style={{height:200,background:'white'}} placeholder="Decsription" onChange={handleChange}></textarea>
+                                    <textarea type="text" name="description" style={{ height: 200, background: 'white' }} placeholder="Decsription" onChange={handleChange}></textarea>
                                 </Col>
                             </Row>
                         </FormGroup>
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <Input type="text" name="price" placeholder="Price" onChange={handleChange}/>
+                                    <Input type="text" name="price" placeholder="Price" onChange={handleChange} />
                                 </Col>
                                 <Col>
-                                    <Input type="text" name="area" placeholder="Area(Sq. ft)" onChange={handleChange}/>
-
+                                    <Input type="text" name="area" placeholder="Area(Sq. ft)" onChange={handleChange} />
                                 </Col>
                             </Row>
                         </FormGroup>
@@ -164,7 +193,7 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <textarea type="text" name="policy" style={{height:200,background:'white'}} placeholder="Policy" onChange={handleChange}></textarea>
+                                    <textarea type="text" name="policy" style={{ height: 200, background: 'white' }} placeholder="Policy" onChange={handleChange}></textarea>
                                 </Col>
                             </Row>
                         </FormGroup>
@@ -172,10 +201,10 @@ export default function User() {
                         <FormGroup>
                             <Row>
                                 <Col>
-                                    <Input type="number" name="pincode" placeholder="Pincode" onChange={selectionChange}/>
+                                    <Input type="number" name="pincode" placeholder="Pincode" onChange={selectionChange} />
                                 </Col>
                                 <Col>
-                                    <Input type="text" name="Address" placeholder="Address" onChange={selectionChange}/>
+                                    <Input type="text" name="Address" placeholder="Address" onChange={selectionChange} />
                                 </Col>
                             </Row>
                         </FormGroup>
@@ -231,39 +260,69 @@ export default function User() {
                                 </Col>
                             </Row>
                         </FormGroup>
-                        <h4>Events and Events Packages</h4>
+                        <h4>Events and Events Packages
+                            <Button onClick={() => setIsShowing(true)} style={{ float: 'right' }}>Add Event +</Button>
+                        </h4>
                         <FormGroup>
                             <Row>
                                 <Col>
-                                {Array.isArray(events) && events.map(eventsObj => (
-                                     <ul className="vendor-amenities">
-                                            <checkbox>
-                                                <li><Input type='checkbox' name="eventsId" className='eventsAdd-checkbox' value={eventsObj.eventsId} onChange={handleaddSubmenities} />
-                                                    <label style={{marginLeft:10}}>{eventsObj.eventsName}</label></li>
-                                                    {inputFields.map((input, index) => {
-                                                        return (
-                                                            <Row key={index}>
-                                                            <Col><input
-                                                                name='packageName'
-                                                                placeholder='Event Package Name'
-                                                                value={input.packageName}
-                                                            /></Col>
-                                                            <Col><textarea
-                                                                name='packageDescription'
-                                                                placeholder='Event package Description'
-                                                                value={input.packageDescription}
-                                                            /></Col>
-                                                            <Col><input
-                                                                name='price'
-                                                                placeholder='Price'
-                                                                value={input.rate}
-                                                            /></Col>
-                                                            </Row>
-                                                        )
-                                                        })}
-                                            </checkbox>
-                                           </ul>
-                                ))}
+                                    <ul className="chip-control">
+                                        {Array.isArray(finalpassevents) && finalpassevents.map((obj,index) => (
+                                            <li>{obj?.packageName} <i onClick={() => removeEvent(index)} className="fa fa-times"></i></li>
+                                        ))}
+                                    </ul>
+
+                                    <Modal
+                                        isOpen={isShowing}
+                                        toggle={() => setIsShowing(!isShowing)}>
+                                        <ModalHeader toggle={() => setIsShowing(!isShowing)}>
+                                            Add Events
+                                        </ModalHeader>
+                                        <ModalBody>
+                                            <Form>
+                                                <FormGroup>
+                                                    <Row>
+                                                        <Col>
+                                                            <select className='custom-select' name="event_id" onChange={handleEventModelChange}>
+                                                                <option selected>Event Type</option>
+                                                                {Array.isArray(events) && events.map(obj => (
+                                                                    <option value={obj.eventsId}> {obj.eventsName} </option>
+                                                                ))}
+                                                            </select>
+                                                        </Col>
+                                                    </Row>
+                                                </FormGroup>
+                                                <FormGroup>
+                                                    <Row>
+                                                        <Col>
+                                                            <Input type="text" name="packageName" placeholder="Package Name" onChange={handleEventChange} />
+                                                        </Col>
+                                                    </Row>
+                                                </FormGroup>
+                                                <FormGroup>
+                                                    <Row>
+                                                        <Col>
+                                                            <textarea type="text" name="packageDescription" style={{ height: 200, background: 'white' }} placeholder="Decsription" onChange={handleEventChange}></textarea>
+                                                        </Col>
+                                                    </Row>
+                                                </FormGroup>
+                                                <FormGroup>
+                                                    <Row>
+                                                        <Col>
+                                                            <Input type="text" name="price" placeholder="Price" onChange={handleEventChange} />
+                                                        </Col>
+                                                    </Row>
+                                                </FormGroup>
+                                                <FormGroup>
+                                                    <Row>
+                                                        <Col>
+                                                            <Button style={{ width: '50%', height: '50px', background: 'rgba(14, 46, 80, 0.92)', float: 'right' }} onClick={handleEvent}>Save</Button>
+                                                        </Col>
+                                                    </Row>
+                                                </FormGroup>
+                                            </Form>
+                                        </ModalBody>
+                                    </Modal>
                                 </Col>
                             </Row>
                         </FormGroup>

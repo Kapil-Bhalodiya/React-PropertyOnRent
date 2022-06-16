@@ -1164,7 +1164,19 @@ img {
 ==============S======W=========E=======T========A===========================
 
 ============================================================================= */
-
+.chip-control {
+    display: flex;
+    flex-wrap: wrap;
+}
+.chip-control li{
+    border-radius: 15px;
+    padding: 7px;
+    background-color: #6dffdddf;
+    /* color: white; */
+    font-weight: 500;
+    width: fit-content;
+    margin: 10px;
+}
 
 
 .card-propertytype{
