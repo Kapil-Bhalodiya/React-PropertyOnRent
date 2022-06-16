@@ -30,7 +30,7 @@ function App() {
           <Route path='/about' element={<About />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/property' element={<Property />} />
-          <Route path='/detailproperty' element={<ListProperty />} />
+          <Route path='/detailproperty/:id' element={<ListProperty />} />
           <Route path='/user' element={<User />} />
           <Route path='/vendor' element={<Vendor />} />
           <Route path='/role' element={<Role />} />

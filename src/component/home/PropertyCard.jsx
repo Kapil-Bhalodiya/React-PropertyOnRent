@@ -11,6 +11,7 @@ import {useNavigate} from 'react-router-dom';
 export default function PropertyCard() {
     const navigate = useNavigate()
     const [Property, setProprty] = useState([]);
+    const [PropertyId, setPropertyId] = useState("");
     const image="";
     const getdata = async () =>  {
             await axios.get("http://localhost:8074/property/get").then(
@@ -26,9 +27,14 @@ export default function PropertyCard() {
         getdata()
     },[])
 
-    const gotodetails=()=>{
-        console.log("helllo")
-        navigate("/detailproperty")
+    const gotodetails=(Id)=>{
+        const propertyId = Id
+       // {State:{id:propertyId}}
+        navigate("/detailproperty/"+propertyId)
+    }
+
+    const gotopropertydetails=()=>{
+        navigate("/property/")
     }
 
     return (
@@ -69,11 +75,12 @@ export default function PropertyCard() {
                                         <i className="fa fa-address-card"></i>  {item.address}<br/>
                                         <br/>
                                     </CardText>
-                                    <Button onClick={gotodetails} propertyId={item.propertyId}>View Property</Button>
+                                    <Button onClick={()=>gotodetails(item.propertyId)}>View Property</Button>
                                 </CardBody>
                             </Card>
                         ))}
                 </Row>
+                <Button style={{margin:"1% 40%",borderRadius:"0%"}} onClick={()=>gotopropertydetails()}>View All Property</Button>
             </Container>
         </>
     )

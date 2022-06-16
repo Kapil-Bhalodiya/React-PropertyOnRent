@@ -1,9 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Breadcrumb, BreadcrumbItem, FormGroup, Form, Input } from "reactstrap";
 import Button from '../common/Button';
 import about3 from '../images/about14.jpg';
 import { Link } from "react-router-dom";
+import axios from "axios";
+import {useNavigate} from 'react-router-dom';
+
 export default function AllProperty() {
+    const navigate = useNavigate()
+    const [propertyData, setPropertyData] = useState([]);
+    const [latestpropertyData, setLatestPropertyData] = useState([]);
+
+    const getdata = async () => {
+        let res = await axios.get("http://localhost:8074/property/getall");
+        setPropertyData(res.data);
+    }
+
+    const selectionChange = () => {
+        axios.get("http://localhost:8074/property/getpropertyhighprice")
+        .then(res => {
+            setPropertyData(res.data);
+        }).catch(err => console.error(err));
+    }
+
+
+    const getselectionhighdata = async () => {
+        let res = await axios.get("http://localhost:8074/property/getpropertyhighprice");
+        setLatestPropertyData(res.data);
+    }
+
+    const getlatestdata = async () => {
+        let res = await axios.get("http://localhost:8074/property/getlatestproperty");
+        setLatestPropertyData(res.data);
+    }
+
+    useEffect(() => {
+        getdata()
+        getlatestdata()
+    }, [])
+
     return (
         <>
             <section>
@@ -25,9 +60,9 @@ export default function AllProperty() {
                 </aside> */}
                 <aside className="grid-property">
                     <Container>
+                 
                         <Row>
                             <Col className="col-4 search-allproperty-col">
-
                                 <article className="advance-search">
                                     <h4>Advance Search</h4>
                                     <Form>
@@ -55,17 +90,21 @@ export default function AllProperty() {
                                 </article>
                                 <article className="advance-search">
                                     <h4>Latest Property</h4>
+                                    {latestpropertyData.map((item, i) => (
+                                    <>
                                     <Row>
                                         <Col className="col-5">
-                                            <a href="#"><img alt="widget" src={about3} className="relatedproperty" /></a>
+                                            <a href="#"><img alt="widget" src={"/images1/"+item.photoModel[0].photopath} onClick={()=>navigate("/detailproperty/"+item.propertyId)} className="relatedproperty" /></a>
                                         </Col>
                                         <Col className="item-content">
-                                            <h5><a href="#">House Hold for Family Function</a></h5>
-                                            <i className="fa fa-map-marker"></i> <span>Surat</span><br />
-                                            <label>$1200</label><span>/mo</span>
+                                        <h5><b><Link to={"/detailproperty/"+item.propertyId}>{item.propertyName}</Link></b></h5>
+                                            <i className="fa fa-map-marker icon"></i>{item.cityModel.cityName}, {item.cityModel.stateModel.stateName}<br />
+                                            <i className="fa fa-coins icon" /> <label>₹{item.price}/day</label>
                                         </Col>
                                     </Row>
                                     <hr />
+                                    </>
+                                    ))}
                                 </article>
                             </Col>
                             <Col className="col-8 list-allproperty-col">
@@ -74,29 +113,37 @@ export default function AllProperty() {
                                         <h5>Showing results</h5>
                                     </Col>
                                     <Col className="col-6" style={{ textAlign: 'right' }}>
-                                        <label>Sort by: </label>
-                                        <select className="custom-select12">
+                                        <label style={{marginRight:"5px"}}>Sort by: </label>
+                                        <select className="custom-select12" onChange={selectionChange}>
                                             <option id="option" value="1">Default</option>
                                             <option className="option" value="2">Low to High</option>
                                             <option className="option" value="3">High to Low</option>
                                         </select>
                                     </Col>
                                 </Row>
+                                {propertyData.map((item, i) => (
+                                    
                                 <Row className="allproperty-result">
+                                    <Row style={{marginTop:"-12px"}}>
+                                        <Col style={{textAlign:"end"}}>
+                                            <section className='tag-propertytype'>
+                                                <a href='#' style={{textDecoration:"none", color:"#00C194"}}>{item.propertyTypeModel.propertytypeName}</a>
+                                            </section>
+                                        </Col>
+                                    </Row>
                                     <Col className="col-5">
-                                        <img alt="widget" src={about3}/>
+                                        <img className="col-5 child" alt="widget" src={"/images1/"+item.photoModel[0].photopath} onClick={()=>navigate("/detailproperty/"+item.propertyId)}/>
                                     </Col>
                                     <Col className="col-7">
-                                        <a href="#">Apartment</a>
-                                        <h4><Link to="/detailproperty">Family house For Rent</Link></h4>
-                                        <i className="fa fa-map-marker"></i> Gujarat, Surat
-                                        <p><b>$1200</b>/mo</p>
+                                        <h4><b><Link to={"/detailproperty/"+item.propertyId}>{item.propertyName}</Link></b></h4>
+                                        <i className="fa fa-map-marker icon"/> {item.address}, {item.cityModel.cityName}, {item.cityModel.stateModel.stateName}
                                         <ul style={{ padding: 'initial', display: 'flex', justifyContent: 'space-between' }}>
-                                            <li><i className="fa fa-bed icon" /> <labe>Beds : 03</labe></li>
-                                            <li><i className="fa fa-shower icon" /> Bath : 02 </li>
+                                            <li><i className="fa fa-coins icon" /> <label><b>₹{item.price}</b>/day</label></li>
+                                            <li style={{marginRight:"2rem"}}><i className="fa fa-chart-area icon" /><label><b>{item.area}</b></label> Sq.ft</li>
                                         </ul>
                                     </Col>
                                 </Row>
+                                 ))}
                             </Col>
                         </Row>
                     </Container>
