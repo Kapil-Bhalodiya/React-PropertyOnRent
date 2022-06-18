@@ -1,7 +1,7 @@
 import React from "react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Form, FormGroup, Input, Row, Col, Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Form, FormGroup, Input, Row, Col, Button, Modal, ModalHeader, ModalBody, Container } from 'reactstrap';
 import SideBar from "./common/SideBar";
 // import Modal from "./Modal";
 
@@ -11,17 +11,26 @@ export default function User() {
     const [propertyType, setPropertyType] = useState({});
     const [state, setState] = useState({});
     const [city, setCity] = useState({});
-    const [ifile, setFiles] = useState([]);
+    const [photoModel, setPhotoModel] = useState([]);
     const [amenites, setAmenities] = useState({});
-    const [addSubAmenites, setaddSubAmenities] = useState([]);
-    const [values, setValues] = useState([]);
+    const [propertyAmenitiesModels, setPropertyAmenitiesModels] = useState([]);
+    const [values, setValues] = useState({
+        postedDate: Date.now(),
+        registrationModel: {
+            registrationId: 1
+        },
+        propertyTypeModel: {
+            propertytypeId: 0
+        },
+        cityModel: {
+            cityId: 0
+        }
+    });
     const [events, setEvents] = useState([]);
     const [passevents, setPassEvents] = useState({});
-    const [finalpassevents, setFinalPassEvents] = useState([]);
+    const [eventPackagesModels, setEventPackagesModels] = useState([]);
     const [isShowing, setIsShowing] = useState(false);
-    const propertyAmenitiesModels = {
-
-    }
+    const [postData, setPostData] = useState([]);
 
     useEffect(() => {
         axios.get("http://localhost:8078/subamenities/get")
@@ -56,6 +65,24 @@ export default function User() {
 
     }, '')
 
+    const handleTypeChange = (e) => {
+        setValues(prevState => ({
+            ...prevState,
+            propertyTypeModel: {
+                propertytypeId: e.target.value
+            }
+        }))
+    }
+
+    const handleCityChange = (e) => {
+        setValues(prevState => ({
+            ...prevState,
+            cityModel: {
+                cityId: e.target.value
+            }
+        }))
+    }
+
     const selectionChange = (e) => {
 
         axios.get("http://localhost:8078/city/getcitystatewise/" + e.target.value)
@@ -69,10 +96,10 @@ export default function User() {
     }
 
     const removeEvent = (index) => {
-        const updatedEvents = finalpassevents.filter((element,id)=>{
+        const updatedEvents = eventPackagesModels.filter((element, id) => {
             return index != id
         })
-        setFinalPassEvents(updatedEvents);
+        setEventPackagesModels(updatedEvents);
     }
 
     const handleEventChange = (e) => {
@@ -94,7 +121,7 @@ export default function User() {
 
     const handleaddSubmenities = (e) => {
         const { value, checked } = e.target;
-        setaddSubAmenities(prevState => ([
+        setPropertyAmenitiesModels(prevState => ([
             ...prevState,
             {
                 subAmenities: {
@@ -102,43 +129,57 @@ export default function User() {
                 }
             }
         ]));
-        console.log(addSubAmenites);
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(values);
-        console.log(ifile);
-        console.log(addSubAmenites);
-        console.log(finalpassevents);
+        setPostData({
+            ...values,
+            photoModel,
+            propertyAmenitiesModels,
+            eventPackagesModels
+        });
+        console.log(postData);
+        // addProperty();
     }
+
+    const addProperty = async () => {
+        await axios.post("http://localhost:8074/property/add", postData).then(
+            (response) => {
+                console.log(response);
+                alert("Add Successfully");
+            }, (error) => {
+                console.log(error);
+                alert("operation fail");
+            })
+    }
+
     const uploadFile = (e) => {
-        // var files = e.target.files;
-        // const uploadedfiles = [];
-        // console.log("length is : " + files.length)
-        // for (let i = 0; i < files.length; i++) {
-        //     let myfile = files.item(i);
-        //     var filepath = "../images/" + myfile.name;
-        //     console.log(filepath)
-        //     uploadedfiles[i] = filepath
-        // }
-        // console.log(uploadedfiles)
-        // setFiles([...ifile, uploadedfiles])
-        setFiles(prevState => ([
+        var files = e.target.files;
+        const uploadedfiles = [];
+        for (let i = 0; i < files.length; i++) {
+            let myfile = files.item(i);
+            var filepath = myfile.name;
+            console.log(filepath)
+            uploadedfiles[i] = filepath
+        }
+        setPhotoModel(prevState => ([
             ...prevState,
             {
-                photoModel: {
-                    [e.target.name]: e.target.files[0].name
-                }
+                photopath: uploadedfiles
             }
-        ]));
-        console.log(ifile)
+        ]))  
+        // var i = 0;
+        // setPhotoModel((prevState) => ([
+        //     ...prevState,
+        //     {
+        //         [e.target.name]: e.target.files[i++].name
+        //     },
+        // ]));
     }
 
-
-
     const handleEvent = (e) => {
-        setFinalPassEvents(finalpassevents => [...finalpassevents, passevents]);
+        setEventPackagesModels(eventPackagesModels => [...eventPackagesModels, passevents]);
     }
 
     return (
@@ -146,196 +187,201 @@ export default function User() {
             <Row className="col-12 topbar-vendor">
                 <h2>Welcome , Sweta Jaiswal</h2>
             </Row>
-            <Row className="col-12" style={{ backgroundColor: '#F5F7FB' }}>
-                <Col className="col-3 admin-sidebar">
-                    <SideBar />
-                </Col>
+            <Container>
+                <Row className="col-12" style={{ backgroundColor: '#F5F7FB' }}>
+                    <Col style={{ position: 'sticky' }} className="col-3 admin-sidebar">
+                        <SideBar />
+                    </Col>
 
-                <Col>
-                    <h4><p>Basic Information</p></h4>
-                    <Form encType="multipart/form-data">
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <Input type="text" name="propertyName" class="form-control" placeholder='Property Title' onChange={handleChange} />
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <textarea type="text" name="description" style={{ height: 200, background: 'white' }} placeholder="Decsription" onChange={handleChange}></textarea>
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <Input type="text" name="price" placeholder="Price" onChange={handleChange} />
-                                </Col>
-                                <Col>
-                                    <Input type="text" name="area" placeholder="Area(Sq. ft)" onChange={handleChange} />
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <select className='custom-select' name="propertytype_id" onChange={handleChange}>
-                                        <option selected>Property Type</option>
-                                        {Array.isArray(propertyType) && propertyType.map(obj => (
-                                            <option value={obj.propertytype_id} >{obj.propertytype_name}</option>
-                                        ))}
-                                    </select>
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <textarea type="text" name="policy" style={{ height: 200, background: 'white' }} placeholder="Policy" onChange={handleChange}></textarea>
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <h4><p>Location Information</p></h4>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <Input type="number" name="pincode" placeholder="Pincode" onChange={selectionChange} />
-                                </Col>
-                                <Col>
-                                    <Input type="text" name="Address" placeholder="Address" onChange={selectionChange} />
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <select className='custom-select' name="state_id" onChange={selectionChange}>
-                                        <option selected>Select State</option>
-                                        {Array.isArray(state) && state.map(object => (
-                                            <option value={object.state_id}>{object.state_name}</option>
-                                        ))}
-                                    </select>
-                                </Col>
-                                <Col>
-                                    <select className='custom-select' name="city_id" onChange={handleChange}>
-                                        <option selected>Select City</option>
-                                        {Array.isArray(city) && city.map(object => (
-                                            <option value={object.city_id} >{object.city_name}</option>
-                                        ))}
-                                    </select>
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <h4>Photos</h4>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <Input type='file' name="photopath" multiple onChange={uploadFile} />
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <h4>Amenities and Features</h4>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    {Array.isArray(amenites) && amenites.map(amenitiesObj => (
-                                        <>
-                                            <h6>{amenitiesObj.amenitiesName}</h6>
-                                            <ul className="vendor-amenities">
-                                                {Array.isArray(subamenities) && subamenities.map(subamenitiesObj => (
-                                                    <checkbox>
-                                                        {subamenitiesObj.amenitiesModel.amenitiesId == amenitiesObj.amenitiesId ?
-                                                            <li><Input type='checkbox' name="subamenitiesId" className='aminitiesAdd-checkbox' value={subamenitiesObj.subamenitiesId} onChange={handleaddSubmenities} />
-                                                                <label>{subamenitiesObj.subamenitiesName}</label></li>
+                    <Col>
+                        <h4><p>Basic Information</p></h4>
+                        <Form encType="multipart/form-data">
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <Input type="text" name="propertyName" class="form-control" placeholder='Property Title' onChange={handleChange} />
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <textarea type="text" name="description" style={{ height: 200, background: 'white' }} placeholder="Decsription" onChange={handleChange}></textarea>
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <Input type="number" name="price" placeholder="Price" onChange={handleChange} />
+                                    </Col>
+                                    <Col>
+                                        <Input type="number" name="area" placeholder="Area(Sq. ft)" onChange={handleChange} />
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <select className='custom-select' name="propertytypeId" onChange={handleTypeChange}>
+                                            <option selected>Property Type</option>
+                                            {Array.isArray(propertyType) && propertyType.map(obj => (
+                                                <option value={obj.propertytype_id} >{obj.propertytype_name}</option>
+                                            ))}
+                                        </select>
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <textarea type="text" name="policy" style={{ height: 200, background: 'white' }} placeholder="Policy" onChange={handleChange}></textarea>
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <h4><p>Location Information</p></h4>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <Input type="number" name="pincode" placeholder="Pincode" onChange={handleChange} />
+                                    </Col>
+                                    <Col>
+                                        <Input type="text" name="address" placeholder="Address" onChange={handleChange} />
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <select className='custom-select' name="stateId" onChange={selectionChange}>
+                                            <option selected>Select State</option>
+                                            {Array.isArray(state) && state.map(object => (
+                                                <option value={object.state_id}>{object.state_name}</option>
+                                            ))}
+                                        </select>
+                                    </Col>
+                                    <Col>
+                                        <select className='custom-select' name="cityId" onChange={handleCityChange}>
+                                            <option selected>Select City</option>
+                                            {Array.isArray(city) && city.map(object => (
+                                                <option value={object.city_id} >{object.city_name}</option>
+                                            ))}
+                                        </select>
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <h4>Photos</h4>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <Input type='file' name="photopath" multiple onChange={uploadFile} />
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <h4>Amenities and Features</h4>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        {Array.isArray(amenites) && amenites.map(amenitiesObj => (
+                                            <>
+                                                <h6>{amenitiesObj.amenitiesName}</h6>
+                                                <ul className="vendor-amenities">
+                                                    {Array.isArray(subamenities) && subamenities.map(subamenitiesObj => (
+                                                        <checkbox>
+                                                            {subamenitiesObj.amenitiesModel.amenitiesId == amenitiesObj.amenitiesId ?
+                                                                <li><Input type='checkbox' name="subamenitiesId" className='aminitiesAdd-checkbox' value={subamenitiesObj.subamenitiesId} onChange={handleaddSubmenities} />
+                                                                    <label>{subamenitiesObj.subamenitiesName}</label></li>
 
-                                                            : ''}
-                                                    </checkbox>
-                                                ))}
-                                            </ul>
+                                                                : ''}
+                                                        </checkbox>
+                                                    ))}
+                                                </ul>
 
-                                        </>
-                                    ))}
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <h4>Events and Events Packages
-                            <Button onClick={() => setIsShowing(true)} style={{ float: 'right' }}>Add Event +</Button>
-                        </h4>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <ul className="chip-control">
-                                        {Array.isArray(finalpassevents) && finalpassevents.map((obj,index) => (
-                                            <li>{obj?.packageName} <i onClick={() => removeEvent(index)} className="fa fa-times"></i></li>
+                                            </>
                                         ))}
-                                    </ul>
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <h4>Events and Events Packages
+                                <Button onClick={() => setIsShowing(true)} style={{ float: 'right' }}>Add Event +</Button>
+                            </h4>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <ul className="chip-control">
+                                            {Array.isArray(eventPackagesModels) && eventPackagesModels.map((obj, index) => (
+                                                <li>{obj?.packageName} <i onClick={() => removeEvent(index)} className="fa fa-times"></i></li>
+                                            ))}
+                                        </ul>
 
-                                    <Modal
-                                        isOpen={isShowing}
-                                        toggle={() => setIsShowing(!isShowing)}>
-                                        <ModalHeader toggle={() => setIsShowing(!isShowing)}>
-                                            Add Events
-                                        </ModalHeader>
-                                        <ModalBody>
-                                            <Form>
-                                                <FormGroup>
-                                                    <Row>
-                                                        <Col>
-                                                            <select className='custom-select' name="event_id" onChange={handleEventModelChange}>
-                                                                <option selected>Event Type</option>
-                                                                {Array.isArray(events) && events.map(obj => (
-                                                                    <option value={obj.eventsId}> {obj.eventsName} </option>
-                                                                ))}
-                                                            </select>
-                                                        </Col>
-                                                    </Row>
-                                                </FormGroup>
-                                                <FormGroup>
-                                                    <Row>
-                                                        <Col>
-                                                            <Input type="text" name="packageName" placeholder="Package Name" onChange={handleEventChange} />
-                                                        </Col>
-                                                    </Row>
-                                                </FormGroup>
-                                                <FormGroup>
-                                                    <Row>
-                                                        <Col>
-                                                            <textarea type="text" name="packageDescription" style={{ height: 200, background: 'white' }} placeholder="Decsription" onChange={handleEventChange}></textarea>
-                                                        </Col>
-                                                    </Row>
-                                                </FormGroup>
-                                                <FormGroup>
-                                                    <Row>
-                                                        <Col>
-                                                            <Input type="text" name="price" placeholder="Price" onChange={handleEventChange} />
-                                                        </Col>
-                                                    </Row>
-                                                </FormGroup>
-                                                <FormGroup>
-                                                    <Row>
-                                                        <Col>
-                                                            <Button style={{ width: '50%', height: '50px', background: 'rgba(14, 46, 80, 0.92)', float: 'right' }} onClick={handleEvent}>Save</Button>
-                                                        </Col>
-                                                    </Row>
-                                                </FormGroup>
-                                            </Form>
-                                        </ModalBody>
-                                    </Modal>
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                        <FormGroup>
-                            <Row>
-                                <Col>
-                                    <Button style={{ width: '50%', height: '50px' }} onClick={handleSubmit}>Add</Button>
-                                </Col>
-                            </Row>
-                        </FormGroup>
-                    </Form>
-                </Col>
-            </Row>
+                                        <Modal
+                                            isOpen={isShowing}
+                                            toggle={() => setIsShowing(!isShowing)}>
+                                            <ModalHeader toggle={() => setIsShowing(!isShowing)}>
+                                                Add Events
+                                            </ModalHeader>
+                                            <ModalBody>
+                                                <Form>
+                                                    <FormGroup>
+                                                        <Row>
+                                                            <Col>
+                                                                <select className='custom-select' name="event_id" onChange={handleEventModelChange}>
+                                                                    <option selected>Event Type</option>
+                                                                    {Array.isArray(events) && events.map(obj => (
+                                                                        <option value={obj.eventsId}> {obj.eventsName} </option>
+                                                                    ))}
+                                                                </select>
+                                                            </Col>
+                                                        </Row>
+                                                    </FormGroup>
+                                                    <FormGroup>
+                                                        <Row>
+                                                            <Col>
+                                                                <Input type="text" name="packageName" placeholder="Package Name" onChange={handleEventChange} />
+                                                            </Col>
+                                                        </Row>
+                                                    </FormGroup>
+                                                    <FormGroup>
+                                                        <Row>
+                                                            <Col>
+                                                                <textarea type="text" name="packageDescription" style={{ height: 200, background: 'white' }} placeholder="Decsription" onChange={handleEventChange}></textarea>
+                                                            </Col>
+                                                        </Row>
+                                                    </FormGroup>
+                                                    <FormGroup>
+                                                        <Row>
+                                                            <Col>
+                                                                <Input type="text" name="price" placeholder="Price" onChange={handleEventChange} />
+                                                            </Col>
+                                                        </Row>
+                                                    </FormGroup>
+                                                    <FormGroup>
+                                                        <Row>
+                                                            <Col>
+                                                                <Button style={{ width: '50%', height: '50px', background: 'rgba(14, 46, 80, 0.92)', float: 'right' }} onClick={handleEvent}>Save</Button>
+                                                            </Col>
+                                                        </Row>
+                                                    </FormGroup>
+                                                </Form>
+                                            </ModalBody>
+                                        </Modal>
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                            <FormGroup>
+                                <Row>
+                                    <Col>
+                                        <Button style={{ width: '50%', height: '50px' }} onClick={handleSubmit}>Add</Button>
+                                    </Col>
+                                </Row>
+                            </FormGroup>
+                        </Form>
+                    </Col>
+                </Row>
+
+
+
+            </Container>
         </>
     )
 }
