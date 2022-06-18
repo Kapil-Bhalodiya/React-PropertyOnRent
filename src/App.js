@@ -5,14 +5,14 @@ import About from './component/about/About';
 import Header from './component/Header';
 import Contact from './component/contact/Contact';
 import Index from './component/home/Index';
-import Property from './component/property/AllProperty';
+import ListProperty from './component/property/AllProperty';
 import {
   BrowserRouter as Router,
   Route,
   Routes
 } from 'react-router-dom';
 import Footer from './component/Footer';
-import ListProperty from './component/property/ListProperty';
+import Property from './component/property/DetailProperty';
 import User from './component/user/User';
 import Vendor from './component/vendor/Vendor';
 import Role from './component/admin/Role';
@@ -29,8 +29,8 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/about' element={<About />} />
           <Route path='/contact' element={<Contact />} />
-          <Route path='/property' element={<Property />} />
-          <Route path='/detailproperty/:id' element={<ListProperty />} />
+          <Route path='/allproperty' element={<ListProperty />} />
+          <Route path='/detailproperty/:id' element={<Property />} />
           <Route path='/user' element={<User />} />
           <Route path='/vendor' element={<Vendor />} />
           <Route path='/role' element={<Role />} />

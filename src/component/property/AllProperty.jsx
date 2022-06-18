@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Breadcrumb, BreadcrumbItem, FormGroup, Form, Input } from "reactstrap";
-import Button from '../common/Button';
+import { Container, Row, Col, Breadcrumb, BreadcrumbItem, FormGroup, Form, Input, Label,Button } from "reactstrap";
+// import Button from '../common/Button';
 import about3 from '../images/about14.jpg';
 import { Link } from "react-router-dom";
 import axios from "axios";
 import {useNavigate} from 'react-router-dom';
+import getPropertyApi from '../../service/getPropertyApi';
 
 export default function AllProperty() {
     const navigate = useNavigate()
     const [propertyData, setPropertyData] = useState([]);
     const [latestpropertyData, setLatestPropertyData] = useState([]);
+   
 
     const getdata = async () => {
         let res = await axios.get("http://localhost:8074/property/getall");
@@ -28,10 +30,52 @@ export default function AllProperty() {
         setLatestPropertyData(res.data);
     }
 
+    const [propertyType, setPropertyType] = useState([]);
+    const getPropertyType = async () => {
+        let res = await getPropertyApi.getPropertyTypeList();
+        setPropertyType(res.data);
+    }
+
+    const [states, setStates] = useState([]);
+    const getStates = async () => {
+        let res = await getPropertyApi.getStateList();
+        console.log("All data :=",res)
+        setStates(res.data);
+    }
+
+    const [city, setCity] = useState([]);
+    const getCity = async (e) => {
+        let res = await getPropertyApi.getCityList(e.target.value);
+        setCity(res.data);
+    }
+
+    const getProperty =  async (type,propertycity) => {
+        // e.preventDefault();
+        console.log("hello");
+        console.log("type is : ",type)
+        console.log("property city  is : ",propertycity)
+        let res = await getPropertyApi.getPropertyList(type,propertycity);
+        console.log(res)
+        setPropertyData(res.data);
+        return false
+    }
+
+    const [type,setType] = useState({});
+    const onPropertyTypeChange = (e) => {
+        setType(e.target.value)
+    }
+
+    const [propertycity,setPropertyCity] = useState({});
+    const onCityChange = (e) => {
+        setPropertyCity(e.target.value)
+    }
+
     useEffect(() => {
         getdata()
         getlatestdata()
-    }, [])
+        getPropertyType()
+        getStates()
+    },[]);
 
     return (
         <>
@@ -58,32 +102,37 @@ export default function AllProperty() {
                         <Row>
                             <Col className="col-4 search-allproperty-col">
                                 <article className="advance-search">
-                                    <h4>Advance Search</h4>
+                                    <h4>What are you looking for ?</h4>
                                     <Form>
-                                        <FormGroup>
-                                            <Input type="text" id="name-search" placeholder="What are you looking for?" className="cutom-input" />
+                                        <FormGroup>           
+                                        <select className='custom-select' name="propertytype_id" onChange={onPropertyTypeChange} placeholder="Property Type">
+                                        <option value="1">Property Type</option>
+                                            {propertyType.map(obj => (
+                                                <option value={obj.propertytype_id}>{obj.propertytype_name}</option>
+                                            ))}
+                                        </select>
+                                        </FormGroup>
+                                        <FormGroup>           
+                                        <select className='custom-select' name="state_id" onChange={getCity} placeholder="All States">
+                                        <option value="1">All States</option>
+                                            {states.map(obj => (
+                                                <option value={obj.state_id}>{obj.state_name}</option>
+                                            ))}
+                                        </select>
                                         </FormGroup>
                                         <FormGroup>
-                                            <select className="custom-select">
-                                                <option id="option" value="1">Property Type</option>
-                                                <option className="option" value="2">Family House</option>
-                                                <option className="option" value="3">Apartment</option>
-                                                <option className="option" value="4">Bunglow</option>
-                                            </select>
+                                        <select className='custom-select' name="city_id" onChange={onCityChange} placeholder="All City">
+                                        <option value="1">All City</option>
+                                            {city.map(obj => (
+                                                <option value={obj.city_id}>{obj.city_name}</option>
+                                            ))}
+                                        </select>
                                         </FormGroup>
-                                        <FormGroup>
-                                            <select className="custom-select">
-                                                <option value="1">All City</option>
-                                                <option value="2">Surat</option>
-                                                <option value="3">Pune</option>
-                                                <option value="3">Rajkot</option>
-                                            </select>
-                                        </FormGroup>
-                                        <Button title="search" width="100%" height="3rem" />
+                                        <Button style={{width:"auto"}} onClick={()=>getProperty(type,propertycity)}>Search Event Destination</Button>
                                     </Form>
                                 </article>
                                 <article className="advance-search">
-                                    <h4>Latest Property</h4>
+                                    <h4 className="animate-charcter">Latest Property</h4>
                                     {latestpropertyData.map((item, i) => (
                                     <>
                                     <Row>
@@ -130,7 +179,10 @@ export default function AllProperty() {
                                     </Col>
                                     <Col className="col-7">
                                         <h4><b><Link to={"/detailproperty/"+item.propertyId}>{item.propertyName}</Link></b></h4>
-                                        <i className="fa fa-map-marker icon"/> {item.address}, {item.cityModel.cityName}, {item.cityModel.stateModel.stateName}
+                                        <i className="fa fa-map-marker icon"/> {item.address}<br/>
+                                        <i className="fa fa-map-marker icon"/> {item.cityModel.cityName}, {item.cityModel.stateModel.stateName}, {item.pincode}
+                                    
+
                                         <ul style={{ padding: 'initial', display: 'flex', justifyContent: 'space-between' }}>
                                             <li><i className="fa fa-coins icon" /> <label><b>₹{item.price}</b>/day</label></li>
                                             <li style={{marginRight:"2rem"}}><i className="fa fa-chart-area icon" /><label><b>{item.area}</b></label> Sq.ft</li>

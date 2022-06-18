@@ -34,7 +34,7 @@ export default function PropertyCard() {
     }
 
     const gotopropertydetails=()=>{
-        navigate("/property/")
+        navigate("/allproperty/")
     }
 
     return (

@@ -4,9 +4,11 @@ import { Container, Row, Col, Form, FormGroup, Input } from "reactstrap";
 import Banner from '../images/index/slider4.jpg';
 import ButtonSend from '../common/Button';
 import axios from "axios";
-import { useParams } from "react-router-dom";
-export default function ListProperty(props) {
+import { useParams, useNavigate, Link } from "react-router-dom";
 
+
+export default function ListProperty(props) {
+    const navigate = useNavigate()
     const {id} = useParams();
     const [propertyData, setProprtyData] = useState([]);
     const [latestpropertyData, setLatestPropertyData] = useState([]);
@@ -21,10 +23,9 @@ export default function ListProperty(props) {
         let res = await axios.get("http://localhost:8074/property/getlatestproperty");
         setLatestPropertyData(res.data);
     }
-
     useEffect(() => {
         getdata()
-        console.log(propertyData);
+        getlatestdata()
     }, [])
 
 
@@ -117,19 +118,23 @@ export default function ListProperty(props) {
                                 </aricle>
                             </Row>
                             <Row className="col-12">
-                                <article className="advance-search">
+                            <article className="advance-search">
                                     <h4>Latest Property</h4>
+                                    {latestpropertyData.map((item, i) => (
+                                    <>
                                     <Row>
                                         <Col className="col-5">
-                                            <a href="#"><img alt="widget" src={Banner} className="relatedproperty" /></a>
+                                            <a href="#"><img alt="widget" src={"/images1/"+item.photoModel[0].photopath} onClick={()=>navigate("/detailproperty/"+item.propertyId)} className="relatedproperty" /></a>
                                         </Col>
                                         <Col className="item-content">
-                                            <h5><a href="#">House Hold for Family Function</a></h5>
-                                            <i className="fa fa-map-marker"></i> <span>Surat</span><br />
-                                            <label>$1200</label><span>/mo</span>
+                                        <h5><b><Link to={"/detailproperty/"+item.propertyId}>{item.propertyName}</Link></b></h5>
+                                            <i className="fa fa-map-marker icon"></i>{item.cityModel.cityName}, {item.cityModel.stateModel.stateName}<br />
+                                            <i className="fa fa-coins icon" /> <label>₹{item.price}/day</label>
                                         </Col>
                                     </Row>
                                     <hr />
+                                    </>
+                                    ))}
                                 </article>
                             </Row>
                         </Col>
