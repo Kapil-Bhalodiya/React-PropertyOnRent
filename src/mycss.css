@@ -1103,40 +1103,114 @@ img {
 }
 
 /* User Profile */
-.admin-sidebar {
+/* .admin-sidebar {
+    position: static;
     background-color: #fff;
     box-shadow: 0 5px 5px rgb(0 0 0 / 7%);
-}
+    margin-top: 0.1em;
+} */
 
-.admin-navlink li {
+/* .admin-navlink li {
     width: 100%;
     text-align: left;
     float: left;
     border-bottom: 1px solid #eee;
 }
+
 .admin-navlink li:hover {
     background: #f9f9f9;
     border-right: #00a376 5px solid;
 }
-.admin-navlink .admin-icon {
-    color: #07c196;
-    width: 12px;
-    text-align: center;
-    margin-right: 1.5em;
-}
+
 .admin-navlink li a {
     text-decoration: none;
     font-weight: 600;
     color: #000000;
     display: block;
     padding: 15px 20px 15px 30px
+} */
+
+.profile-pic {
+    position: relative;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    color: #fff;
+    text-align: center;
+    line-height: 55px;
+    font-size: 28px;
+    background-color: #00a376;
+    overflow: hidden;
+    cursor: pointer;
 }
-.topbar-vendor{
+
+.vendor-navlink {
+    position: absolute;
+    top: 80px;
+    right: -10px;
+    padding: 5px;
+    background-color: #fff;
+    width: 200px;
+    box-sizing: 0 5px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    transition: 0.5%;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.vendor-navlink.active{
+    visibility: visible;
+    opacity: 1;
+}
+
+.vendor-navlink ul {
+    padding: 0px;
+}
+
+.vendor-navlink::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: 28px;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    transform: rotate(45deg);
+}
+
+.vendor-navlink ul li {
+    padding: 10px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vendor-navlink .admin-icon {
+    max-width: 20px;
+    width: 12px;
+    text-align: center;
+    margin-right: 1.5em;
+    opacity: 0.5;
+    transition: 0.5s;
+}
+
+.vendor-navlink ul li a {
+    color: #555;
+}
+
+.vendor-navlink ul li a:hover {
+    color: #00a376;
+    opacity: 1;
+}
+
+.topbar-vendor {
     padding: 2rem;
     background-color: #fff;
-    box-shadow: 0 5px 5px rgb(0 0 0 / 7%);;
-    margin-bottom: 5px;
+    box-shadow: 0 5px 5px rgb(0 0 0 / 7%);
+    margin-bottom: 1em;
 }
+
 /* .aminities-add{
     margin: .2rem;
     border:2px solid #e5e5e5;
@@ -1149,14 +1223,15 @@ img {
 .aminities-add i{
     color: #979ba8;
 } */
-.vendor-amenities{
+.vendor-amenities {
     display: flex;
     letter-spacing: 0.1rem;
     flex-wrap: wrap;
 }
-.aminitiesAdd-checkbox{
+
+.aminitiesAdd-checkbox {
     padding: 0.6rem;
-    margin:0rem 0.5rem 0rem 2rem;
+    margin: 0rem 0.5rem 0rem 2rem;
 }
 
 /* ========================================================================
@@ -1164,11 +1239,18 @@ img {
 ==============S======W=========E=======T========A===========================
 
 ============================================================================= */
+
+.delete:hover {
+    color: red;
+    cursor: pointer;
+}
+
 .chip-control {
     display: flex;
     flex-wrap: wrap;
 }
-.chip-control li{
+
+.chip-control li {
     border-radius: 15px;
     padding: 7px;
     background-color: #6dffdddf;
@@ -1179,11 +1261,11 @@ img {
 }
 
 
-.card-propertytype{
+.card-propertytype {
     position: absolute;
     margin: auto;
     margin-top: -7px;
-    left:30px;
+    left: 30px;
     font-size: 20px;
     background-color: #ffffff;
     padding: 8px 15px;

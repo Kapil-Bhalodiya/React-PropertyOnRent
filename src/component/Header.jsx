@@ -14,17 +14,14 @@ import {
     Container,
     Col
 } from 'reactstrap';
-import { NavLink as Link } from "react-router-dom";
-
+import { NavLink as Link,useNavigate } from "react-router-dom";
+import SideBar from "./vendor/common/SideBar";
 
 function Header() {
-
+    let naviage = useNavigate();
     const checkToken = localStorage.getItem("user");
     const [isOpen, setIsOpen] = React.useState(true);
 
-    const handleLogout = () => {
-        localStorage.removeItem("user");
-    }
     return (
         <section className="main-header">
             <div className="menu-layout">
@@ -57,12 +54,7 @@ function Header() {
                                 <ul>
                                     <li class="listing-button">
                                     {checkToken ?
-                                        <Link to="/" className="listing-btn">
-                                            <span className="fa-icon">
-                                                <i className="fa fa-user"></i>
-                                            </span>
-                                            <span className="item-text" onClick={handleLogout}>Logout</span>
-                                        </Link>
+                                        <SideBar />
                                         :
                                         <Link to="/login" className="listing-btn">
                                             <span className="fa-icon">

@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React, { useState } from 'react'
 import { Button, Form, FormGroup, Input, Row, Container, Col } from 'reactstrap';
 import pic from '../../images/authentication/auth-login.svg';
 import { Link, useNavigate } from 'react-router-dom';
@@ -6,34 +6,37 @@ import axios from 'axios';
 
 const Login = () => {
 
-  const [state,setState] = React.useState({
-    emailId:'',
-    password:''
+  const [state, setState] = React.useState({
+    emailId: '',
+    password: ''
   })
+  const [userData , setUserData] = useState({});
 
   const navigate = useNavigate();
 
-  const handleChange = (e) =>{
-    setState(prevState=>({
+  const handleChange = (e) => {
+    setState(prevState => ({
       ...prevState,
-      [e.target.name]:e.target.value
+      [e.target.name]: e.target.value
     }))
   }
 
-  const handleLogin = async (e)=>{
-    e.preventDefault();
-  //   let data = {
-  //     emailId: state.emailId,
-  //     password: state.password
-  // }
-  console.log(state);
-    let res = await axios.post('http://localhost:8080/login/authentication',state);
-    if(res.status === 200){
-      localStorage.setItem("user",JSON.stringify(res.data));
-      res.data.role == '[ROLE_User]' ? navigate("/user") : navigate("/vendor");
-    }else console.log("Wrong EmailId and Password");
+  const getUserDetail = async (emailId) => {
+    let res = await axios.get('http://localhost:8008/login/profile/'+emailId);
+    if(res.status == 200) {
+      console.log("asddsd");
+      localStorage.setItem("profile",JSON.stringify(res.data));}
   }
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    let res = await axios.post('http://localhost:8008/login/authentication', state);
+    if (res.status === 200) {
+      localStorage.setItem("user", JSON.stringify(res.data));
+      getUserDetail(JSON.parse(localStorage.getItem("user")).emailId);
+      res.data.role == '[ROLE_User]' ? navigate("/user") : navigate("/vendor");
+    } else console.log("Wrong EmailId and Password");
+  }
 
   return (
     <>
@@ -56,10 +59,11 @@ const Login = () => {
                     Not a member? <Link to="/register" className='signinlink'> Sign up now </Link>
                   </Col>
                 </Row>
+                
               </Form>
             </Col>
             <Col className='fadeRight-content'>
-              <img src={pic} className='img-fluid'/>
+              <img src={pic} className='img-fluid' />
             </Col>
           </Row>
         </Container>

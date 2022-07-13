@@ -1,37 +1,57 @@
 import React from 'react'
+import { NavLink as Link,useNavigate } from "react-router-dom";
+import { Button } from 'reactstrap';
 
-function SideBar() {
+const SideBar = () => {
+  let nevigate = useNavigate();
+  const menuToggle = () => {
+    const toggleMenu = document.querySelector('.vendor-navlink');
+    toggleMenu.classList.toggle('active');
+  }
+  const handleLogout = () => {
+    console.log("yup");
+    localStorage.removeItem("user");
+    localStorage.removeItem("profile");
+    nevigate("/");
+  }
+
+  const profileName = JSON.parse(localStorage.getItem("profile"));
+
   return (
     <React.Fragment>
-      <section >
-        <ul className="admin-navlink">
+      <div className="col-12" onClick={menuToggle}>
+        <div className='profile-pic'>{profileName.firstName[0]+profileName.lastName[0]}</div>
+      </div>
+      <section className="vendor-navlink">
+        <ul>
           <li>
-            <a href="/vendor">
-              <span className="link">
-                <i className='fa fa-plus admin-icon'></i><label>Add New</label>
-              </span>
-            </a>
+            <Link to = "/vendor">
+              <i className='fa fa-plus admin-icon'></i><label>Add New</label>
+            </Link>
           </li>
           <li>
-            <a href="/vendor/listProperty">
+            <Link to="/vendor/listProperty">
               <i className='fa fa-list-alt admin-icon'></i><label>My Listing</label>
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/vendor/editProfile">
+            <Link to="/vendor/editProfile">
               <i className='fa fa-user admin-icon'></i><label>Edit Profile</label>
-            </a>
+            </Link>
           </li>
-
           <li>
             <a href="#">
               <i className='fa fa-calendar admin-icon'></i><label>Booking</label>
             </a>
           </li>
           <li>
-            <a href="#">
+            <Link to="#">
               <i className='fa fa-book admin-icon'></i><label>Review</label>
-            </a>
+            </Link>
+          </li>
+          <li>
+            <Button onClick={handleLogout}>Logout
+            </Button>
           </li>
         </ul>
       </section>

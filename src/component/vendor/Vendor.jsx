@@ -2,7 +2,6 @@ import React from "react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Form, FormGroup, Input, Row, Col, Button, Modal, ModalHeader, ModalBody, Container } from 'reactstrap';
-import SideBar from "./common/SideBar";
 // import Modal from "./Modal";
 
 
@@ -140,7 +139,7 @@ export default function User() {
             eventPackagesModels
         });
         console.log(postData);
-        // addProperty();
+        addProperty();
     }
 
     const addProperty = async () => {
@@ -155,46 +154,30 @@ export default function User() {
     }
 
     const uploadFile = (e) => {
-        var files = e.target.files;
-        const uploadedfiles = [];
-        for (let i = 0; i < files.length; i++) {
-            let myfile = files.item(i);
-            var filepath = myfile.name;
-            console.log(filepath)
-            uploadedfiles[i] = filepath
+        for (let i = 0; i < e.target.files.length; i++) {
+            setPhotoModel(prevState => ([
+                ...prevState,
+                {
+                    photopath: e.target.files[i].name
+                }
+            ]))  
         }
-        setPhotoModel(prevState => ([
-            ...prevState,
-            {
-                photopath: uploadedfiles
-            }
-        ]))  
-        // var i = 0;
-        // setPhotoModel((prevState) => ([
-        //     ...prevState,
-        //     {
-        //         [e.target.name]: e.target.files[i++].name
-        //     },
-        // ]));
     }
 
     const handleEvent = (e) => {
         setEventPackagesModels(eventPackagesModels => [...eventPackagesModels, passevents]);
     }
 
+    const SessionId = JSON.parse(localStorage.getItem("profile"));
     return (
         <>
             <Row className="col-12 topbar-vendor">
-                <h2>Welcome , Sweta Jaiswal</h2>
+                <h2>Welcome , {SessionId.firstName +" "+SessionId.lastName}</h2>
             </Row>
             <Container>
                 <Row className="col-12" style={{ backgroundColor: '#F5F7FB' }}>
-                    <Col style={{ position: 'sticky' }} className="col-3 admin-sidebar">
-                        <SideBar />
-                    </Col>
-
                     <Col>
-                        <h4><p>Basic Information</p></h4>
+                        <h4>Basic Information</h4>
                         <Form encType="multipart/form-data">
                             <FormGroup>
                                 <Row>
@@ -371,16 +354,13 @@ export default function User() {
                             <FormGroup>
                                 <Row>
                                     <Col>
-                                        <Button style={{ width: '50%', height: '50px' }} onClick={handleSubmit}>Add</Button>
+                                        <Button style={{ width: '25%', height: '50px' }} onClick={handleSubmit}>Add</Button>
                                     </Col>
                                 </Row>
                             </FormGroup>
                         </Form>
                     </Col>
                 </Row>
-
-
-
             </Container>
         </>
     )
