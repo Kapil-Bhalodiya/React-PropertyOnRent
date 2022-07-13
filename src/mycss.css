@@ -842,7 +842,7 @@ textarea {
 
 .icon {
     color: var(--rt-primary-color);
-    margin-right: 10px;
+    margin-right: 0px;
     height: 30px;
     width: 30px;
     background-color: #edf9f6;
@@ -940,7 +940,8 @@ img {
 
 .overviewproperty,
 .aboutoverview,
-.propertyamenities {
+.propertyamenities,
+.propertyevents {
     background-color: #fff;
     padding: 30px 30px 0px 30px;
     border: 1px solid #e5e5e5;
