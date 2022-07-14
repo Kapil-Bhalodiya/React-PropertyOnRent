@@ -35,7 +35,7 @@ const SideBar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/vendor/editProfile">
+            <Link to="/vendor/updateprofile">
               <i className='fa fa-user admin-icon'></i><label>Edit Profile</label>
             </Link>
           </li>

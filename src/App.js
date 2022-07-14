@@ -17,6 +17,7 @@ import User from './component/user/User';
 import Vendor from './component/vendor/Vendor';
 import Role from './component/admin/Role';
 import VendroListProperty from './component/vendor/Listing';
+import UpdateProfile from './component/vendor/UpdateProfile';
 
 function App() {
   return (
@@ -34,7 +35,8 @@ function App() {
           <Route path='/user' element={<User />} />
           <Route path='/vendor' element={<Vendor />} />
           <Route path='/role' element={<Role />} />
-          <Route path='/vendor/listProperty' element={<VendroListProperty/>} />
+          <Route path='/vendor/listproperty' element={<VendroListProperty/>} />
+          <Route path='/vendor/updateprofile' element={<UpdateProfile/>} />
         </Routes>
       <Footer/>
       </Router>

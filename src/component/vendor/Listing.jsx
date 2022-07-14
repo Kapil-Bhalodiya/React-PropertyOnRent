@@ -22,6 +22,7 @@ export default function Listing() {
     useEffect(() => {
         getdata()
     }, [])
+    
     return (
         <>
             <Row className="col-12" style={{ backgroundColor: '#F5F7FB' }}>
