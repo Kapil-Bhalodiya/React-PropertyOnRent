@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, CardImg, CardBody, CardSubtitle, CardText, CardTitle, Container} from 'reactstrap';
-// import pic from '../images/authentication/auth.svg';
-// import about3 from '../images/about14.jpg';
-import getservice from '../../service/getPropertyApi';
-// import img from '/images1/b.jpg';
+import { Row, Col, Card, CardImg, CardBody, CardSubtitle, CardText, CardTitle, Container, Button} from 'reactstrap';
 import axios from 'axios';
-// import img_pic from "/images1/Shree's Bunglow_56_1.jpg"
+import {useNavigate} from 'react-router-dom';
 
 export default function PropertyCard() {
+    const navigate = useNavigate()
     const [Property, setProprty] = useState([]);
+    const [PropertyId, setPropertyId] = useState("");
+    const image="";
     const getdata = async () =>  {
             await axios.get("http://localhost:8074/property/get").then(
             (response) => {
@@ -22,6 +21,17 @@ export default function PropertyCard() {
     useEffect(() => {
         getdata()
     },[])
+
+    const gotodetails=(Id)=>{
+        const propertyId = Id
+       // {State:{id:propertyId}}
+        navigate("/detailproperty/"+propertyId)
+    }
+
+    const gotopropertydetails=()=>{
+        navigate("/allproperty/")
+    }
+
     return (
         <>
             <Container>
@@ -33,9 +43,8 @@ export default function PropertyCard() {
                 </Row>
                 <Row>
                         {Property.map((item, i) => (
-                              
+                            
                             <Card className='card-main' style={{width:"30%",margin:"1rem"}}>
-                                {console.log(item)}
                                 <CardImg
                                     alt={"/images1/"+item.photoModel[0].photopath}
                                     src={"/images1/"+item.photoModel[0].photopath}
@@ -55,16 +64,18 @@ export default function PropertyCard() {
                                     </CardSubtitle>
                                     <CardText>
                                         <ul style={{ display: 'flex', justifyContent: 'space-between', padding: '0' }}>
-                                            <li><i className="fa fa-circle"></i> Area: {item.area} sq.ft</li>
-                                            <li style={{ float: 'right' }}><i class="fa fa-money"></i> Rent: {item.price} Rs</li>
+                                            <li><i className="fa fa-bed"></i> Area: {item.area} sq.ft</li>
+                                            <li style={{ float: 'right' }}><i className="fa fa-bath"></i> Rent: {item.price} Rs</li>
                                         </ul>
                                         <i className="fa fa-address-card"></i>  {item.address}<br/>
                                         <br/>
                                     </CardText>
+                                    <Button onClick={()=>gotodetails(item.propertyId)}>View Property</Button>
                                 </CardBody>
                             </Card>
                         ))}
                 </Row>
+                <Button style={{margin:"1% 40%",borderRadius:"0%"}} onClick={()=>gotopropertydetails()}>View All Property</Button>
             </Container>
         </>
     )

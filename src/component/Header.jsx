@@ -40,7 +40,7 @@ function Header() {
                                         <NavLink tag={Link} to="/" activaClassName="active">Home</NavLink>
                                     </NavItem>
                                     <NavItem>
-                                        <NavLink tag={Link} to="/property" activaClassName="active">Property</NavLink>
+                                        <NavLink tag={Link} to="/allproperty" activaClassName="active">Property</NavLink>
                                     </NavItem>
                                     <NavItem>
                                         <NavLink tag={Link} to="/about" activaClassName="active">About</NavLink>
