@@ -1,15 +1,10 @@
 import { Button } from "bootstrap";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Container, Row, Col, Form, FormGroup, Input, Text,  Popover, PopoverBody} from "reactstrap";
-import Banner from '../images/index/slider4.jpg';
+import { Container, Row, Col, Form, FormGroup, Input, Badge} from "reactstrap";
 import ButtonSend from '../common/Button';
 import axios from "axios";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import moment from "moment";
-import ImageSlider from "react-simple-image-slider";
-import getEventApi from '../../service/getEventApi';
-import { eventWrapper } from "@testing-library/user-event/dist/utils";
-//import {Text} from "Text";
 
 export default function ListProperty(props) {
     const navigate = useNavigate();
@@ -19,7 +14,7 @@ export default function ListProperty(props) {
     const [latestpropertyData, setLatestPropertyData] = useState([]);
 
     const getdata = async (id) => {
-        console.log("this " + id)
+        console.log("id " + id)
         let res = await axios.get("http://localhost:8074/property/getall/" + id);
         setProprtyData(res.data);
         getphotodata(res.data);
@@ -42,21 +37,34 @@ export default function ListProperty(props) {
     }
 
     const [event, setEvent] = useState([]);
+
     const getEvent = async () => {
-        let res = await getEventApi.getEventList();
-        setEvent(res.data);
+        let res = await axios.get("http://localhost:8078/events/get");
+        setEvent(res.data); 
     }
 
     const [eventsId,setEventsId] = useState(0);
+
     const onEventChange = (e) => {
         console.log("Target Value",e.target.value)
-        setEventsId(e.target.value)
+        setEventsId(e.target.value)  
     }
+
+    const [eventPackage,setEventPackage] = useState({});
+    const onEventRadioChange = (event_id,event_package_name,rate) => {
+        setEventPackage({
+            "eventId":event_id,
+            "eventPackageName":event_package_name,
+            "rate":rate
+        })
+    }
+
+    var totalPrice1 = propertyData[0]?.price;
 
     useEffect(() => {
         getdata(id)
-        getlatestdata()
         getEvent()
+        getlatestdata()
     }, [id])
 
 
@@ -82,15 +90,6 @@ export default function ListProperty(props) {
                     </Row>
                     <Row>
                         <Col className="col-8">
-                            {/* <aside className="img-zoom-container">
-                                <ImageSlider
-                                    width={"100%"}
-                                    height={"420px"}
-                                    images={photoData}
-                                    showBullets={true}
-                                    showNavs={true}
-                                />
-                             </aside> */}
                             <aside className="img-zoom-container">
                                 <img src={"/images1/" + propertyData[0]?.photoModel[0].photopath} alt="img" style={{ height: "420px", width: '50%' }} />
                                 <img src={"/images1/" + propertyData[0]?.photoModel[1].photopath} alt="img" style={{ height: "420px", width: '50%' }} />
@@ -151,7 +150,7 @@ export default function ListProperty(props) {
                                         )}
                                     </ul>
                                 </article>
-                                <article className="propertyevents">
+                                <article className="propertyevents" style={{margin:"0px 3px"}}>
                                     <h3>Events & Event Packages</h3>
                                     <article >
                                         <Row>
@@ -162,31 +161,66 @@ export default function ListProperty(props) {
                                                 ))}
                                             </select>
                                         </Row>
-                                        <hr />
-                                        {propertyData[0]?.eventPackagesModels.map(eventPackagesObj => (
-                                            <>{
-                                                 eventPackagesObj.eventsModel.eventsId==eventsId &&
-                                                <Row className="advance-search">
-                                                    <Col className="item-content">
-                                                        <h5 className=""><b><Link to={"#"}>{eventPackagesObj.packageName}</Link></b></h5>
-                                                        <i className="fa fa-coins icon" /> <label>₹{eventPackagesObj.rate}</label><br />
-                                                        {eventPackagesObj.packageDescription}<br />
-                                                        
-                                                    </Col>
-                                                    {/* <Col>
-                                                        { <input type="checkbox"></input>}
-                                                    </Col> */}
-                                                </Row>
-                                            }
-                                            </>
-                                        ))}
                                     </article>
+                                    <hr />
+                                    <article class="accordion" id="accordionExample">
+                                    {propertyData[0]?.eventPackagesModels.map(eventPackagesObj => (
+                                            eventPackagesObj.eventsModel.eventsId==eventsId &&
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id={"heading"+eventPackagesObj.eventsModel.eventsId}>
+                                                
+                                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse"+eventPackagesObj.eventsModel.eventsId} aria-expanded="true" aria-controls={"collapse"+eventPackagesObj.eventsModel.eventsId}>
+                                                    <strong><Input type="radio" name="eventpackageradio" value={eventPackagesObj.packageName} className="form-check-input" onChange={() => onEventRadioChange(eventPackagesObj.eventPackageId,eventPackagesObj.packageName,eventPackagesObj.rate)} style={{padding:"0.8rem"}}/>{"  "+eventPackagesObj.packageName}<Badge id="event-badge">{eventPackagesObj.rate} ₹</Badge></strong>
+                                                </button>
+                                                </h2>
+                                                <div id={"collapse"+eventPackagesObj.eventsModel.eventsId} class="accordion-collapse collapse show" aria-labelledby={"heading"+eventPackagesObj.eventsModel.eventsId} data-bs-parent="#accordionExample">
+                                                <div class="accordion-body">
+                                                    <text-muted>{eventPackagesObj.packageDescription}</text-muted>
+                                                </div>
+                                                </div>
+                                            </div>
+                                    ))}
+                                     </article>
                                 </article>
                             </aside>
                         </Col>
                         <Col className="col-4">
+                        <Row className="col-12">
+                            <article className="advance-search">
+                            <h4>Book Property For Rent</h4>
+                                    <Form>
+                                        <FormGroup>
+                                            <label>Check In</label>
+                                            <input type="date" name="checkin" className="form-control"  placeholder="Check In"/>
+                                        </FormGroup>
+                                        <FormGroup>
+                                            <label>Check Out</label>
+                                            <input type="date" name="checkout" className="form-control" placeholder="Check Out"/>
+                                        </FormGroup>
+                                        <label>Property Rent & Event Packages Rate</label>
+                                        <hr/>
+                                        <article className="_adv_features">
+                                            <ul style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                <li>Property Rent<span>{"  "+propertyData[0]?.price+"₹"}</span></li>
+                                                {/* {totalPrice1 = propertyData[0]?.price} */}
+                                                {
+                                                    eventPackage.rate != null && 
+                                                    <>
+                                                    <li>Event Package Rate<span>{"  "+eventPackage.rate+"₹"}</span></li>
+                                                    {totalPrice1 = propertyData[0]?.price + eventPackage.rate}
+                                                    </> 
+                                                } 
+                                                {console.log(totalPrice1)}
+                                            </ul>
+                                        </article>
+                                        <hr/>
+                                        <label>Total Payment : ₹<span className="price theme-cl" style={{float:"right"}}>{totalPrice1}</span></label>
+                                        <ButtonSend title='Book It Now' width="100%" height="50px"/>
+                                    </Form>
+                            </article>
+                            </Row>
                             <Row className="col-12">
-                                <aricle className="advance-search">
+                                <article className="advance-search">
                                     <h4>Contact Vendor</h4>
                                     <Form>
                                         <FormGroup>
@@ -203,11 +237,11 @@ export default function ListProperty(props) {
                                         </FormGroup>
                                         <ButtonSend title='Send' width='100%' height='50px' />
                                     </Form>
-                                </aricle>
+                                </article>
                             </Row>
                             <Row className="col-12">
                                 <article className="advance-search">
-                                    <h4 className="animate-charcter">Latest Property</h4>
+                                    <h4 className="animate-character">Latest Property</h4>
                                     {latestpropertyData.map((item, i) => (
                                         <>
                                             <Row>

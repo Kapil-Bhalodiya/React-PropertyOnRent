@@ -132,7 +132,7 @@ export default function AllProperty() {
                                     </Form>
                                 </article>
                                 <article className="advance-search">
-                                    <h4 className="animate-charcter">Latest Property</h4>
+                                    <h4 className="animate-character">Latest Property</h4>
                                     {latestpropertyData.map((item, i) => (
                                     <>
                                     <Row>
@@ -182,7 +182,6 @@ export default function AllProperty() {
                                         <i className="fa fa-map-marker icon"/> {item.address}<br/>
                                         <i className="fa fa-map-marker icon"/> {item.cityModel.cityName}, {item.cityModel.stateModel.stateName}, {item.pincode}
                                     
-
                                         <ul style={{ padding: 'initial', display: 'flex', justifyContent: 'space-between' }}>
                                             <li><i className="fa fa-coins icon" /> <label><b>₹{item.price}</b>/day</label></li>
                                             <li style={{marginRight:"2rem"}}><i className="fa fa-chart-area icon" /><label><b>{item.area}</b></label> Sq.ft</li>

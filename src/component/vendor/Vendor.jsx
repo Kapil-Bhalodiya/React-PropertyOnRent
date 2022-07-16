@@ -364,9 +364,6 @@ export default function User() {
                         </Form>
                     </Col>
                 </Row>
-
-
-
             </Container>
         </>
     )
