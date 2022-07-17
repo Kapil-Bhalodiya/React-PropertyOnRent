@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Form, FormGroup, Label, Input, Row, Container, Col } from 'reactstrap';
 import pic from '../../images/authentication/login-img.svg';
 import { useNavigate, Link } from 'react-router-dom';
@@ -7,24 +7,35 @@ import axios from 'axios';
 export default function Register() {
     let navigate = useNavigate();
 
+    const [state, setState] = useState({});
+    const [city, setCity] = useState({});
     const [regform, setRegForm] = useState(true);
     const [otpform, setOtpForm] = useState(false);
     const [values, setValues] = useState({
-        roleModel:{
-            roleId : 3
+        roleModel: {
+            roleId: 3
         },
-        firstname:"",
-        lastname:"",
-        emailId:"",
-        password:"",
-        contactNumber:"",
-        cityModel:{
-            cityId : 1
+        firstname: "",
+        lastname: "",
+        emailId: "",
+        password: "",
+        contactNumber: "",
+        cityModel: {
+            cityId: 1
         },
-        pincode:""
+        pincode: ""
     });
     const [errors, setErrors] = useState({});
-    const [otp,setOtp] = useState(0);
+    const [otp, setOtp] = useState(0);
+
+    const selectionChange = (e) => {
+
+        axios.get("http://localhost:8078/city/getcitystatewise/" + e.target.value)
+            .then(res => {
+                setCity(res.data);
+            })
+            .catch(err => console.error(err));
+    }
 
     const handleChange = (event) => {
         console.log(event.target);
@@ -47,28 +58,35 @@ export default function Register() {
             (response) => {
                 console.log(response);
                 alert("Otp Sent Successfully");
+                setOtpForm(!false);
+                setRegForm(!true);
             }, (error) => {
                 console.log(error);
                 alert("Operation failed");
             }
         );
-        setOtpForm(!false);
-        setRegForm(!true);
     }
     const sendOtp = async () => {
         setOtp(values['otpcode']);
         console.log(otp);
-        await axios.post("http://localhost:8080/registration/otpcode/"+otp).then(
+        await axios.post("http://localhost:8080/registration/otpcode/" + otp).then(
             (response) => {
                 console.log(response);
                 alert("New User Added");
                 navigate("/login");
-            },(error) => {
+            }, (error) => {
                 console.log(error);
                 alert("Wrong OTP...");
             }
         );
     }
+    useEffect(() => {
+        axios.get("http://localhost:8078/state/get")
+            .then(res => {
+                setState(res.data);
+            })
+            .catch(err => console.error(err));
+    }, [])
     return (
         <>
             {regform && (
@@ -127,21 +145,17 @@ export default function Register() {
                                             <Col>
                                                 <Input type="select" name="state_id" onChange={handleChange}>
                                                     <option selected>Select State</option>
-                                                    <option>1</option>
-                                                    <option>2</option>
-                                                    <option>3</option>
-                                                    <option>4</option>
-                                                    <option>5</option>
+                                                    {Array.isArray(state) && state.map(object => (
+                                                        <option value={object.state_id}>{object.state_name}</option>
+                                                    ))}
                                                 </Input>
                                             </Col>
                                             <Col>
                                                 <Input type="select" name="city_id" onChange={handleChange}>
                                                     <option selected>Select City</option>
-                                                    <option>1</option>
-                                                    <option>2</option>
-                                                    <option>3</option>
-                                                    <option>4</option>
-                                                    <option>5</option>
+                                                    {Array.isArray(city) && city.map(object => (
+                                                        <option value={object.city_id} >{object.city_name}</option>
+                                                    ))}
                                                 </Input>
                                             </Col>
                                         </Row>
@@ -149,7 +163,7 @@ export default function Register() {
                                     <Button onClick={handleSubmit}>Submit</Button>
                                     <Row className='mt-3'>
                                         <Col>
-                                           Already a member? <Link to="/login" className='signinlink'> Sign in now </Link>
+                                            Already a member? <Link to="/login" className='signinlink'> Sign in now </Link>
                                         </Col>
                                     </Row>
                                 </Form>

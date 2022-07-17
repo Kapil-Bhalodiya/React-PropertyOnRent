@@ -17,6 +17,7 @@ import User from './component/user/User';
 import Vendor from './component/vendor/Vendor';
 import Role from './component/admin/Role';
 import VendroListProperty from './component/vendor/Listing';
+import VendorBooking from './component/vendor/Booking';
 import UpdateProfile from './component/vendor/UpdateProfile';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
           <Route path='/vendor' element={<Vendor />} />
           <Route path='/role' element={<Role />} />
           <Route path='/vendor/listproperty' element={<VendroListProperty/>} />
+          <Route path='/vendor/booking' element={<VendorBooking/>} />
           <Route path='/vendor/updateprofile' element={<UpdateProfile/>} />
         </Routes>
       <Footer/>

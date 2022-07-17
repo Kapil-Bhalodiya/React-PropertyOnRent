@@ -197,6 +197,13 @@ ul {
     margin: auto;
 }
 
+.list-img {
+    position: relative;
+    text-align: center;
+    background-color: #00a376;
+    height: 30%;
+}
+
 .listing-button .listing-btn span {
     color: #ffffff;
     background-color: rgba(0, 0, 0, 0.15);
@@ -804,14 +811,16 @@ textarea {
 }
 
 .allproperty-result {
+    position: relative;
     width: 100%;
-    padding: 20px;
+    /* padding: 20px; */
     background-color: #fff;
     border: 1px solid #e8e8e8;
-    margin-bottom: 24px;
-    margin: auto;
+    border-radius: 20px;
+    margin: 2% auto 2% auto;
     align-items: center;
     animation: 2s fadeInUp;
+    box-shadow: 0px 0px 2px gray;
 }
 
 .allproperty-result h4 {
@@ -822,8 +831,9 @@ textarea {
 }
 
 .allproperty-result img {
-    width: 250px;
+    width: 100%;
     height: 200px;
+    border-radius: 15px 0px 0px 15px;
 }
 
 .allproperty-result p {
@@ -1158,9 +1168,10 @@ img {
     opacity: 0;
 }
 
-.vendor-navlink.active{
+.vendor-navlink.active {
     visibility: visible;
     opacity: 1;
+    box-shadow: 0px 0px 4px gray;
 }
 
 .vendor-navlink ul {
@@ -1180,10 +1191,10 @@ img {
 
 .vendor-navlink ul li {
     padding: 10px 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
-    align-items: center;
-    justify-content: center;
+    margin-left: 1.5rem;
+    /* align-items: center;
+    justify-content: center; */
 }
 
 .vendor-navlink .admin-icon {

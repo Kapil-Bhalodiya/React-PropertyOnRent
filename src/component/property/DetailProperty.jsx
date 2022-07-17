@@ -1,10 +1,13 @@
-import React, { useEffect, useState} from "react";
-import { Container, Row, Col, Form, FormGroup, Input} from "reactstrap";
+import { Button } from "bootstrap";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { Container, Row, Col, Form, FormGroup, Input, Text, Popover, PopoverBody, Badge } from "reactstrap";
 import ButtonSend from '../common/Button';
 import axios from "axios";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import moment from "moment";
 import getEventApi from '../../service/getEventApi';
+import { eventWrapper } from "@testing-library/user-event/dist/utils";
+//import {Text} from "Text";
 
 export default function ListProperty(props) {
     const navigate = useNavigate();
@@ -12,9 +15,10 @@ export default function ListProperty(props) {
     const [photoData, setPhotoData] = useState([]);
     const [propertyData, setProprtyData] = useState([]);
     const [latestpropertyData, setLatestPropertyData] = useState([]);
+    const SessionId = JSON.parse(localStorage.getItem("profile"));
 
     const getdata = async (id) => {
-        console.log("this " + id)
+        console.log("id " + id)
         let res = await axios.get("http://localhost:8074/property/getall/" + id);
         setProprtyData(res.data);
         getphotodata(res.data);
@@ -37,23 +41,77 @@ export default function ListProperty(props) {
     }
 
     const [event, setEvent] = useState([]);
+
     const getEvent = async () => {
-        let res = await getEventApi.getEventList();
+        let res = await axios.get("http://localhost:8078/events/get");
         setEvent(res.data);
     }
 
-    const [eventsId,setEventsId] = useState(0);
+    const [eventsId, setEventsId] = useState(0);
+
     const onEventChange = (e) => {
+        console.log("Target Value", e.target.value)
         setEventsId(e.target.value)
     }
 
+    // const bookProperty = () => {
+    //     // e.preventDefault();
+
+    // }
+
+    const [eventPackage, setEventPackage] = useState({});
+    const onEventRadioChange = (eventPackageId, eventPackageName, rate) => {
+        setEventPackage({
+            "eventPackageId": eventPackageId,
+            "eventPackageName": eventPackageName,
+            "rate": rate
+        })
+    }
+    var totalPrice1 = propertyData[0]?.price;
     useEffect(() => {
         getdata(id)
-        getlatestdata()
         getEvent()
+        getlatestdata()
     }, [id])
 
 
+    const [values, setValues] = useState({
+    });
+
+    const [postData, setPostData] = useState({});
+    const handleBookingSubmit = (e) => {
+        e.preventDefault();
+        console.log(values);
+        // console.log(postData);
+        // addPropertyBooking();
+    }
+
+    const handleChange = (e) => {
+        console.log([e.target.name] +" "+ e.target.value,)
+        setValues(prevState => ({
+            ...prevState,
+            [e.target.name] : e.target.value,
+            "propertyModel": {
+                "propertyId": propertyData[0]?.propertyId
+            },
+            "registerationModel":{
+                "registrationId":SessionId.registrationId
+            },
+            "price": totalPrice1,
+            "eventPackageId": eventPackage.eventPackageId
+        }));
+    }
+
+    const addPropertyBooking = async () => {
+        await axios.post("http://localhost:8076/booking/add", postData).then(
+            (response) => {
+                console.log(response);
+                alert("Add Successfully");
+            }, (error) => {
+                console.log(error);
+                alert("operation fail");
+            })
+    }
     return (
         <>
             <section className="detailproperty">
@@ -145,7 +203,7 @@ export default function ListProperty(props) {
                                         )}
                                     </ul>
                                 </article>
-                                <article className="propertyevents">
+                                <article className="propertyevents" style={{ margin: "0px 3px" }}>
                                     <h3>Events & Event Packages</h3>
                                     <article >
                                         <Row>
@@ -156,31 +214,93 @@ export default function ListProperty(props) {
                                                 ))}
                                             </select>
                                         </Row>
-                                        <hr />
+                                    </article>
+                                    <hr />
+                                    {/* <article className="propertyevents" style={{margin:"0px 3px"}}>
+                                    {
+                                        
+                                    propertyData[0]?.eventPackagesModels.map(eventPackagesObj => (
+                                        eventPackagesObj.eventsModel.eventsId==eventsId &&
+                                        AccordionData.push({eventid: eventPackagesObj.eventsModel.eventsId},
+                                                            {packageName: eventPackagesObj.packageName},
+                                                            {rate:eventPackagesObj.rate},
+                                                            {packageDescription: eventPackagesObj.packageDescription})
+                                        ))}
+                                        {console.log("Data :::",AccordionData)}
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="col-sm-4">
+                                            {/* <h3>React Accordion</h3>}
+                                            <AccordionList accordionData={AccordionData} handleToggle={handleToggle} toggle={toggle} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </article> */}
+                                    <article class="accordion" id="accordionExample">
                                         {propertyData[0]?.eventPackagesModels.map(eventPackagesObj => (
-                                            <>{
-                                                 eventPackagesObj.eventsModel.eventsId==eventsId &&
-                                                <Row className="advance-search">
-                                                    <Col className="item-content">
-                                                        <h5 className=""><b><Link to={"#"}>{eventPackagesObj.packageName}</Link></b></h5>
-                                                        <i className="fa fa-coins icon" /> <label>₹{eventPackagesObj.rate}</label><br />
-                                                        {eventPackagesObj.packageDescription}<br />
-                                                        
-                                                    </Col>
-                                                    {/* <Col>
-                                                        { <input type="checkbox"></input>}
-                                                    </Col> */}
-                                                </Row>
-                                            }
-                                            </>
+                                            eventPackagesObj.eventsModel.eventsId == eventsId &&
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id={"heading" + eventPackagesObj.eventsModel.eventsId}>
+
+                                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse" + eventPackagesObj.eventsModel.eventsId} aria-expanded="true" aria-controls={"collapse" + eventPackagesObj.eventsModel.eventsId}>
+                                                        <strong><Input type="radio" name="eventpackageradio" value={eventPackagesObj.packageName} className="form-check-input" onChange={() => onEventRadioChange(eventPackagesObj.eventPackageId, eventPackagesObj.packageName, eventPackagesObj.rate)} style={{ padding: "0.8rem" }} />{"  " + eventPackagesObj.packageName}<Badge id="event-badge">{eventPackagesObj.rate} ₹</Badge></strong>
+                                                    </button>
+                                                </h2>
+                                                <div id={"collapse" + eventPackagesObj.eventsModel.eventsId} class="accordion-collapse collapse show" aria-labelledby={"heading" + eventPackagesObj.eventsModel.eventsId} data-bs-parent="#accordionExample">
+                                                    <div class="accordion-body">
+                                                        <text-muted>{eventPackagesObj.packageDescription}</text-muted>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         ))}
                                     </article>
+                                    {/* <article className="propertyamenities">
+                                        {/* <h3>Selected Event Packages</h3>}
+                                        <ul style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                <li><i class="fa fa-check-circle"></i>
+                                                <label>{eventPackage.eventPackageName}</label></li>
+                                        </ul>
+                                    </article> */}
                                 </article>
                             </aside>
                         </Col>
                         <Col className="col-4">
                             <Row className="col-12">
-                                <aricle className="advance-search">
+                                <article className="advance-search">
+                                    <h4>Book Property For Rent</h4>
+                                    <Form>
+                                        <FormGroup>
+                                            <label>Check In</label>
+                                            <Input type="date" name="checkIn" className="form-control" placeholder="Check In" onClick={handleChange} />
+                                        </FormGroup>
+                                        <FormGroup>
+                                            <label>Check Out</label>
+                                            <Input type="date" name="checkOut" className="form-control" placeholder="Check Out" onClick={handleChange} />
+                                        </FormGroup>
+                                        <label>Property Rent & Event Packages Rate</label>
+                                        <hr />
+                                        <article className="_adv_features">
+                                            <ul style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                <li>Property Rent<span>{"  " + propertyData[0]?.price + "₹"}</span></li>
+                                                {/* {totalPrice1 = propertyData[0]?.price} */}
+                                                {
+                                                    eventPackage.rate != null &&
+                                                    <>
+                                                        <li>Event Package Rate<span>{"  " + eventPackage.rate + "₹"}</span></li>
+                                                        {totalPrice1 = propertyData[0]?.price + eventPackage.rate}
+                                                    </>
+                                                }
+                                                {console.log(totalPrice1)}
+                                            </ul>
+                                        </article>
+                                        <hr />
+                                        <label>Total Payment : ₹<span className="price theme-cl" style={{ float: "right" }}>{totalPrice1}</span></label>
+                                        <button title='Book It Now' width="100%" height="50px" onClick={handleBookingSubmit} type="submit">Send</button>
+                                    </Form>
+                                </article>
+                            </Row>
+                            <Row className="col-12">
+                                <article className="advance-search">
                                     <h4>Contact Vendor</h4>
                                     <Form>
                                         <FormGroup>
@@ -197,11 +317,11 @@ export default function ListProperty(props) {
                                         </FormGroup>
                                         <ButtonSend title='Send' width='100%' height='50px' />
                                     </Form>
-                                </aricle>
+                                </article>
                             </Row>
                             <Row className="col-12">
                                 <article className="advance-search">
-                                    <h4 className="animate-charcter">Latest Property</h4>
+                                    <h4 className="animate-character">Latest Property</h4>
                                     {latestpropertyData.map((item, i) => (
                                         <>
                                             <Row>
