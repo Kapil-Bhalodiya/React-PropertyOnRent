@@ -45,8 +45,8 @@ export default function PropertyCard() {
                         {Property.map((item, i) => (
                             <Card className='card-main' style={{width : '30%'}}>
                                 <CardImg
-                                    alt={"/images1/"+item.photoModel[0].photopath}
-                                    src={"/images1/"+item.photoModel[0].photopath}
+                                    // alt={"/images1/"+item.photoModel[0].photopath}
+                                    // src={"/images1/"+item.photoModel[0].photopath}
                                     width="100%" 
                                     height="40%"/>
                                  {/* <section className='card-propertytype'>

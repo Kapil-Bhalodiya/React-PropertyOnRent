@@ -1,21 +1,30 @@
-import { Button } from "bootstrap";
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Container, Row, Col, Form, FormGroup, Input, Text, Popover, PopoverBody, Badge } from "reactstrap";
-import ButtonSend from '../common/Button';
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Form, FormGroup, Input, Badge } from "reactstrap";
+import Button from '../common/Button';
 import axios from "axios";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import moment from "moment";
-import getEventApi from '../../service/getEventApi';
-import { eventWrapper } from "@testing-library/user-event/dist/utils";
-//import {Text} from "Text";
 
-export default function ListProperty(props) {
+export default function ListProperty() {
     const navigate = useNavigate();
     const { id } = useParams();
     const [photoData, setPhotoData] = useState([]);
     const [propertyData, setProprtyData] = useState([]);
     const [latestpropertyData, setLatestPropertyData] = useState([]);
+    const [eventPackage, setEventPackage] = useState({});
+    const [event, setEvent] = useState([]);
     const SessionId = JSON.parse(localStorage.getItem("profile"));
+    const role = JSON.parse(localStorage.getItem("user"));
+    const [values, setValues] = useState({});
+    var totalPrice1 = propertyData[0]?.price;
+
+
+    useEffect(() => {
+        getdata(id)
+        getEvent()
+        getlatestdata()
+    }, [id])
+
 
     const getdata = async (id) => {
         console.log("id " + id)
@@ -40,8 +49,6 @@ export default function ListProperty(props) {
         setPhotoData(photopaths);
     }
 
-    const [event, setEvent] = useState([]);
-
     const getEvent = async () => {
         let res = await axios.get("http://localhost:8078/events/get");
         setEvent(res.data);
@@ -53,13 +60,7 @@ export default function ListProperty(props) {
         console.log("Target Value", e.target.value)
         setEventsId(e.target.value)
     }
-
-    // const bookProperty = () => {
-    //     // e.preventDefault();
-
-    // }
-
-    const [eventPackage, setEventPackage] = useState({});
+    
     const onEventRadioChange = (eventPackageId, eventPackageName, rate) => {
         setEventPackage({
             "eventPackageId": eventPackageId,
@@ -67,23 +68,18 @@ export default function ListProperty(props) {
             "rate": rate
         })
     }
-    var totalPrice1 = propertyData[0]?.price;
-    useEffect(() => {
-        getdata(id)
-        getEvent()
-        getlatestdata()
-    }, [id])
 
-
-    const [values, setValues] = useState({
-    });
-
-    const [postData, setPostData] = useState({});
-    const handleBookingSubmit = (e) => {
+    const handleBookingSubmit = async (e) => {
         e.preventDefault();
         console.log(values);
-        // console.log(postData);
-        // addPropertyBooking();
+        await axios.post("http://localhost:8076/booking/add", values).then(
+            (response) => {
+                console.log(response);
+                alert("Add Successfully");
+            }, (error) => {
+                console.log(error);
+                alert("operation fail");
+            })
     }
 
     const handleChange = (e) => {
@@ -94,7 +90,7 @@ export default function ListProperty(props) {
             "propertyModel": {
                 "propertyId": propertyData[0]?.propertyId
             },
-            "registerationModel":{
+            "registrationModel":{
                 "registrationId":SessionId.registrationId
             },
             "price": totalPrice1,
@@ -102,16 +98,6 @@ export default function ListProperty(props) {
         }));
     }
 
-    const addPropertyBooking = async () => {
-        await axios.post("http://localhost:8076/booking/add", postData).then(
-            (response) => {
-                console.log(response);
-                alert("Add Successfully");
-            }, (error) => {
-                console.log(error);
-                alert("operation fail");
-            })
-    }
     return (
         <>
             <section className="detailproperty">
@@ -264,7 +250,9 @@ export default function ListProperty(props) {
                                 </article>
                             </aside>
                         </Col>
+                        
                         <Col className="col-4">
+                        {role.role == "[ROLE_User]" ?
                             <Row className="col-12">
                                 <article className="advance-search">
                                     <h4>Book Property For Rent</h4>
@@ -295,10 +283,11 @@ export default function ListProperty(props) {
                                         </article>
                                         <hr />
                                         <label>Total Payment : ₹<span className="price theme-cl" style={{ float: "right" }}>{totalPrice1}</span></label>
-                                        <button title='Book It Now' width="100%" height="50px" onClick={handleBookingSubmit} type="submit">Send</button>
+                                        <button title="Book It Now" width="100%" height="50px" onClick={handleBookingSubmit} type="submit">Send</button>
                                     </Form>
                                 </article>
                             </Row>
+                            :""}
                             <Row className="col-12">
                                 <article className="advance-search">
                                     <h4>Contact Vendor</h4>
@@ -315,7 +304,7 @@ export default function ListProperty(props) {
                                         <FormGroup>
                                             <textarea type="email" id="email" placeholder="Message"></textarea>
                                         </FormGroup>
-                                        <ButtonSend title='Send' width='100%' height='50px' />
+                                        <Button title='Send' width='100%' height='50px' />
                                     </Form>
                                 </article>
                             </Row>

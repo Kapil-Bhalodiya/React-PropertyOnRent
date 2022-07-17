@@ -1,4 +1,5 @@
 import React from 'react'
+import { useEffect } from 'react';
 import { NavLink as Link, useNavigate } from "react-router-dom";
 import { Button } from 'reactstrap';
 
@@ -15,12 +16,15 @@ const SideBar = () => {
     nevigate("/");
   }
 
-  const profileName = JSON.parse(localStorage.getItem("profile"));
+
+  const profileName= JSON.parse(localStorage.getItem("profile"))
+
+  
 
   return (
     <React.Fragment>
       <div className="col-12" onClick={menuToggle}>
-        <div className='profile-pic'>{profileName.firstName[0] + profileName.lastName[0]}</div>
+        <div className='profile-pic'>{profileName.firstName[0]+""+profileName.lastName[0]}</div>
       </div>
       <section className="vendor-navlink">
         {JSON.parse(localStorage.getItem("user")).role == '[ROLE_Vendor]' ?

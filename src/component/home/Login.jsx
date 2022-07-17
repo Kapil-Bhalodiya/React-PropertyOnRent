@@ -10,15 +10,14 @@ const Login = () => {
     emailId: '',
     password: ''
   })
-  const [userData , setUserData] = useState({});
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setState(prevState => ({
-      ...prevState,
+    setState({
+      ...state,
       [e.target.name]: e.target.value
-    }))
+    })
   }
 
   const getUserDetail = async (emailId) => {

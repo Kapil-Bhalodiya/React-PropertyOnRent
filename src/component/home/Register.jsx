@@ -4,57 +4,80 @@ import pic from '../../images/authentication/login-img.svg';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
-export default function Register() {
-    let navigate = useNavigate();
 
-    const [state, setState] = useState({});
-    const [city, setCity] = useState({});
+export default function Register() {
+
+    useEffect(() => {
+        getStates();
+    }, [])
+
+
+    let navigate = useNavigate();
+    const [otp, setOtp] = useState(0);
+    const [city, setCity] = useState([]);
+    const [states, setStates] = useState([]);
+    const [cityModel,setCityModel] = useState({});
+    const [stateModel,setStateModel] = useState({})
+    const [roleModel,setRoleModel] = useState({});
     const [regform, setRegForm] = useState(true);
     const [otpform, setOtpForm] = useState(false);
-    const [values, setValues] = useState({
-        roleModel: {
-            roleId: 3
-        },
-        firstname: "",
-        lastname: "",
-        emailId: "",
-        password: "",
-        contactNumber: "",
-        cityModel: {
-            cityId: 1
-        },
-        pincode: ""
-    });
-    const [errors, setErrors] = useState({});
-    const [otp, setOtp] = useState(0);
+    const [values, setValues] = useState({});
+    const [registerData, setRegisterData] = useState({});
 
-    const selectionChange = (e) => {
+    const getCity = async (e) => {
+        setStateModel({
+            'stateModel': {
+                stateId:e.target.value
+            }
+        })
+        axios.get("http://localhost:8078/city/getcitystatewise/"+e.target.value)
+        .then(res => {
+            setCity(res.data);
+        })
+        .catch(err => console.error(err));
+        
+    }
+    const onCityChange = (e) => {
+        setCityModel(prevState => ({
+            ...prevState,
+                [e.target.name] : e.target.value,
+                ...stateModel,
+        }));
+    }
 
-        axios.get("http://localhost:8078/city/getcitystatewise/" + e.target.value)
+    const getStates = () => {
+        axios.get("http://localhost:8078/state/get")
             .then(res => {
-                setCity(res.data);
-            })
-            .catch(err => console.error(err));
+                setStates(res.data);
+        })
+        .catch(err => console.error(err));
     }
 
-    const handleChange = (event) => {
-        console.log(event.target);
-        const { name, value } = event.target;
-        setValues({ ...values, [name]: value });
-        // setValues(prevState=>({
-        //     ...prevState,
-        //     cityModel:{
-        //         city_id:values['city_id']
-        //     },
-        //     roleModel:{
-        //         role_id:values['role_id']
-        //     }
-        // }));
-        console.log(values);
+    const handleRoleChange = (e) => {
+        setRoleModel(prevState => ({
+            ...prevState,
+                [e.target.name] : e.target.value
+        }));
     }
+
+    const handleChange = (e) => {
+        setValues(prevState=>({
+            ...prevState,
+            [e.target.name] : e.target.value
+        }));
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post("http://localhost:8080/registration/saveuser", values).then(
+        setRegisterData({
+            ...registerData , ...values,roleModel,cityModel
+        });
+        console.log(registerData);
+        addProperty();
+    }
+
+    const addProperty = async () => {
+        await axios.post("http://localhost:8008/registration/saveuser", registerData).then(
             (response) => {
                 console.log(response);
                 alert("Otp Sent Successfully");
@@ -66,10 +89,10 @@ export default function Register() {
             }
         );
     }
+
     const sendOtp = async () => {
         setOtp(values['otpcode']);
-        console.log(otp);
-        await axios.post("http://localhost:8080/registration/otpcode/" + otp).then(
+        await axios.post("http://localhost:8008/registration/otpcode/" + otp).then(
             (response) => {
                 console.log(response);
                 alert("New User Added");
@@ -80,13 +103,7 @@ export default function Register() {
             }
         );
     }
-    useEffect(() => {
-        axios.get("http://localhost:8078/state/get")
-            .then(res => {
-                setState(res.data);
-            })
-            .catch(err => console.error(err));
-    }, [])
+
     return (
         <>
             {regform && (
@@ -100,11 +117,11 @@ export default function Register() {
                                     <FormGroup tag="fieldset">
                                         <Row>
                                             <Col> <Label check>
-                                                <Input type="radio" name="role_id" value={3} onChange={handleChange} />{' '}
+                                                <Input type="radio" name="roleId" value={3} onChange={handleRoleChange} />{' '}
                                                 User
                                             </Label></Col>
                                             <Col> <Label check>
-                                                <Input type="radio" name="role_id" value={2} onChange={handleChange} />{' '}
+                                                <Input type="radio" name="roleId" value={2} onChange={handleRoleChange} />{' '}
                                                 Vendor
                                             </Label></Col>
                                         </Row>
@@ -116,7 +133,6 @@ export default function Register() {
                                             </Col>
                                             <Col>
                                                 <Input type="text" name="lastname" placeholder="Lastname" onChange={handleChange} />
-
                                             </Col>
                                         </Row>
                                     </FormGroup>
@@ -143,20 +159,20 @@ export default function Register() {
                                     <FormGroup>
                                         <Row>
                                             <Col>
-                                                <Input type="select" name="state_id" onChange={handleChange}>
-                                                    <option selected>Select State</option>
-                                                    {Array.isArray(state) && state.map(object => (
-                                                        <option value={object.state_id}>{object.state_name}</option>
+                                                <select className='custom-select' name="stateId" onChange={getCity} placeholder="All States">
+                                                    <option value="1">All States</option>
+                                                    {states.map(obj => (
+                                                        <option value={obj.state_id}>{obj.state_name}</option>
                                                     ))}
-                                                </Input>
+                                                </select>
                                             </Col>
                                             <Col>
-                                                <Input type="select" name="city_id" onChange={handleChange}>
-                                                    <option selected>Select City</option>
-                                                    {Array.isArray(city) && city.map(object => (
-                                                        <option value={object.city_id} >{object.city_name}</option>
-                                                    ))}
-                                                </Input>
+                                            <select className='custom-select' name="cityId" onChange={onCityChange} placeholder="All City">
+                                                <option value="1">All City</option>
+                                                {city.map(obj => (
+                                                    <option value={obj.city_id}>{obj.city_name}</option>
+                                                ))}
+                                            </select>
                                             </Col>
                                         </Row>
                                     </FormGroup>
