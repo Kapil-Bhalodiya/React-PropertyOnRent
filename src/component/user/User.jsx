@@ -7,7 +7,7 @@ import { Form, FormGroup, Input, Row, Col, Button, Modal, ModalHeader, ModalBody
 
 export default function User() {
     
-    const SessionId = JSON.parse(localStorage.getItem("profile"));
+    const SessionId = JSON.parse(sessionStorage.getItem("profile"));
     const [UserProperty, setUserProperty] = useState([]);
     const getdata = async () => {
         await axios.get("http://localhost:8076/booking/get/" + SessionId.registrationId).then(

@@ -99,35 +99,35 @@ export default function AllProperty() {
                                 <article className="advance-search">
                                     <h4>What are you looking for ?</h4>
                                     <Form>
-                                        <FormGroup>
-                                            <select className='custom-select' name="propertytype_id" onChange={onPropertyTypeChange} placeholder="Property Type">
-                                                <option value="1">Property Type</option>
-                                                {propertyType.map(obj => (
-                                                    <option value={obj.propertytype_id}>{obj.propertytype_name}</option>
-                                                ))}
-                                            </select>
+                                        <FormGroup>           
+                                        <select className='custom-select' name="propertytype_id" onChange={onPropertyTypeChange} placeholder="Property Type">
+                                        <option value="1">Property Type</option>
+                                            {propertyType.map(obj => (
+                                                <option value={obj.propertytype_id}>{obj.propertytype_name}</option>
+                                            ))}
+                                        </select>
+                                        </FormGroup>
+                                        <FormGroup>           
+                                        <select className='custom-select' name="state_id" onChange={getCity} placeholder="All States">
+                                        <option value="1">All States</option>
+                                            {states.map(obj => (
+                                                <option value={obj.state_id}>{obj.state_name}</option>
+                                            ))}
+                                        </select>
                                         </FormGroup>
                                         <FormGroup>
-                                            <select className='custom-select' name="state_id" onChange={getCity} placeholder="All States">
-                                                <option value="1">All States</option>
-                                                {states.map(obj => (
-                                                    <option value={obj.state_id}>{obj.state_name}</option>
-                                                ))}
-                                            </select>
+                                        <select className='custom-select' name="city_id" onChange={onCityChange} placeholder="All City">
+                                        <option value="1">All City</option>
+                                            {city.map(obj => (
+                                                <option value={obj.city_id}>{obj.city_name}</option>
+                                            ))}
+                                        </select>
                                         </FormGroup>
-                                        <FormGroup>
-                                            <select className='custom-select' name="city_id" onChange={onCityChange} placeholder="All City">
-                                                <option value="1">All City</option>
-                                                {city.map(obj => (
-                                                    <option value={obj.city_id}>{obj.city_name}</option>
-                                                ))}
-                                            </select>
-                                        </FormGroup>
-                                        <Button style={{ width: "auto" }} onClick={() => getProperty(type, propertycity)}>Search Event Destination</Button>
+                                        <Button style={{width:"auto"}} onClick={()=>getProperty(type,propertycity)}>Search Event Destination</Button>
                                     </Form>
                                 </article>
                                 <article className="advance-search">
-                                    <h4 className="animate-charcter">Latest Property</h4>
+                                    <h4 className="animate-character">Latest Property</h4>
                                     {latestpropertyData.map((item, i) => (
                                         <>
                                             <Row>

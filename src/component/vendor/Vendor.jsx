@@ -149,7 +149,7 @@ export default function User() {
                 alert("Add Successfully");
             }, (error) => {
                 console.log(error);
-                alert("operation fail");
+                // alert("operation fail");
             })
     }
 
@@ -168,7 +168,7 @@ export default function User() {
         setEventPackagesModels(eventPackagesModels => [...eventPackagesModels, passevents]);
     }
 
-    const SessionId = JSON.parse(localStorage.getItem("profile"));
+    const SessionId = JSON.parse(sessionStorage.getItem("profile"));
     return (
         <>
             <Row className="col-12 topbar-vendor">

@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 export default function UpdateProfile() {
 
-    const profileName =  JSON.parse(localStorage.getItem("profile"));
+    const profileName =  JSON.parse(sessionStorage.getItem("profile"));
     const [updatedValue, setUpdatedValue] = useState({});
 
     const handleChange = (event) => {

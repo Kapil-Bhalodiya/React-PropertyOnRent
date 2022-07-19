@@ -22,7 +22,7 @@ const Login = () => {
 
   const getUserDetail = async (emailId) => {
     let res = await axios.get('http://localhost:8008/login/profile/'+emailId);
-    if(res.status == 200) localStorage.setItem("profile",JSON.stringify(res.data));
+    if(res.status == 200) sessionStorage.setItem("profile",JSON.stringify(res.data));
   }
 
   const handleLogin = async (e) => {
@@ -30,8 +30,8 @@ const Login = () => {
     let res = await axios.post('http://localhost:8008/login/authentication', state);
     console.log("status : "+res.status);
     if (res.status === 200) {
-      localStorage.setItem("user", JSON.stringify(res.data));
-      getUserDetail(JSON.parse(localStorage.getItem("user")).emailId);
+      sessionStorage.setItem("user", JSON.stringify(res.data));
+      getUserDetail(JSON.parse(sessionStorage.getItem("user")).emailId);
       res.data.role == '[ROLE_User]' ? navigate("/user") : navigate("/vendor");
     } else {
       alert("Wrong EmailId ");

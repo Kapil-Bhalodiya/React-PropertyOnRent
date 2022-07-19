@@ -43,18 +43,19 @@ export default function PropertyCard() {
                 </Row>
                 <Row>
                         {Property.map((item, i) => (
-                            <Card className='card-main' style={{width : '30%'}}>
+                            
+                            <Card className='card-main' style={{width:"30%",margin:"1rem"}}>
                                 <CardImg
-                                    // alt={"/images1/"+item.photoModel[0].photopath}
-                                    // src={"/images1/"+item.photoModel[0].photopath}
-                                    width="100%" 
-                                    height="40%"/>
-                                 {/* <section className='card-propertytype'>
+                                    alt={"/images1/"+item.photoModel[0].photopath}
+                                    src={"/images1/"+item.photoModel[0].photopath}
+                                    width="50%" 
+                                    height="50%"/>
+                                 <section className='card-propertytype'>
                                     <a href='#' style={{textDecoration:"none", color:"#00C194"}}>{item.propertyTypeModel.propertytypeName}</a>
-                                </section> */}
-                                <CardBody >
+                                </section>
+                                <CardBody style={{ padding: 20 }}>
                                     <CardTitle tag="h3">
-                                        <p key="item.propertyId">{item.propertyName}</p>
+                                        <p key={item.propertyId}>{item.propertyName}</p>
                                     </CardTitle>
                                     <CardSubtitle style={{ padding: '10px 10px 10px 0px' }}
                                         className="mb-2 text-muted"
@@ -66,13 +67,13 @@ export default function PropertyCard() {
                                             <li><i className="fa fa-bed"></i> Area: {item.area} sq.ft</li>
                                             <li style={{ float: 'right' }}><i className="fa fa-bath"></i> Rent: {item.price} Rs</li>
                                         </ul>
-                                        <i className="fa fa-address-card"></i>{item.address}<br/>
+                                        <i className="fa fa-address-card"></i>  {item.address}<br/>
                                         <br/>
-                                        <Button onClick={"()=>gotodetails(item.propertyId)"} style={{float:'right',padding:10}}>View Property</Button>
                                     </CardText>
+                                    <Button onClick={()=>gotodetails(item.propertyId)}>View Property</Button>
                                 </CardBody>
                             </Card>
-                         ))}
+                        ))}
                 </Row>
                 <Button style={{margin:"1% 40%",borderRadius:"0%"}} onClick={()=>gotopropertydetails()}>View All Property</Button>
             </Container>

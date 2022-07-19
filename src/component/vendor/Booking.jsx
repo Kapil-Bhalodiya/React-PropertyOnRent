@@ -8,7 +8,7 @@ import axios from 'axios';
 
 export default function Listing() {
 
-    const VendorSession = JSON.parse(localStorage.getItem('profile'));
+    const VendorSession = JSON.parse(sessionStorage.getItem('profile'));
     const [BookedProperty, setBookedProperty] = useState([]);
 
     const getdata = async () => {

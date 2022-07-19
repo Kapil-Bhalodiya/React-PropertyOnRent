@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Form, FormGroup, Input, Badge } from "reactstrap";
-import Button from '../common/Button';
+import { Container, Row, Col, Form, FormGroup, Input, Badge,Button } from "reactstrap";
+// import Button from '../common/Button';
 import axios from "axios";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import moment from "moment";
@@ -13,8 +13,8 @@ export default function ListProperty() {
     const [latestpropertyData, setLatestPropertyData] = useState([]);
     const [eventPackage, setEventPackage] = useState({});
     const [event, setEvent] = useState([]);
-    const SessionId = JSON.parse(localStorage.getItem("profile"));
-    const role = JSON.parse(localStorage.getItem("user"));
+    const SessionId = JSON.parse(sessionStorage.getItem("profile"));
+    const role = JSON.parse(sessionStorage.getItem("user"));
     const [values, setValues] = useState({});
     var totalPrice1 = propertyData[0]?.price;
 
@@ -252,6 +252,8 @@ export default function ListProperty() {
                         </Col>
                         
                         <Col className="col-4">
+                            {role != null &&
+                            <>
                         {role.role == "[ROLE_User]" ?
                             <Row className="col-12">
                                 <article className="advance-search">
@@ -283,11 +285,13 @@ export default function ListProperty() {
                                         </article>
                                         <hr />
                                         <label>Total Payment : ₹<span className="price theme-cl" style={{ float: "right" }}>{totalPrice1}</span></label>
-                                        <button title="Book It Now" width="100%" height="50px" onClick={handleBookingSubmit} type="submit">Send</button>
+                                        <Button style={{width:"100%"}} onClick={handleBookingSubmit}>Book it Now</Button>
+                                        {/* <button title="Book It Now" width="100%" height="50px"  type="submit">Send</button> */}
                                     </Form>
                                 </article>
                             </Row>
                             :""}
+                            </>}
                             <Row className="col-12">
                                 <article className="advance-search">
                                     <h4>Contact Vendor</h4>
@@ -304,7 +308,7 @@ export default function ListProperty() {
                                         <FormGroup>
                                             <textarea type="email" id="email" placeholder="Message"></textarea>
                                         </FormGroup>
-                                        <Button title='Send' width='100%' height='50px' />
+                                        <Button title='Send' width='100%' height='50px'>Send</Button>
                                     </Form>
                                 </article>
                             </Row>
