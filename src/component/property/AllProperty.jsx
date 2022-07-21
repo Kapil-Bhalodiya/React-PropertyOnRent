@@ -168,7 +168,7 @@ export default function AllProperty() {
                                                 </section>
                                             </Col>
                                         </Row>
-                                        <Col className="col-5" style={{ padding: 0 }}>
+                                        <Col className="col-5" style={{ padding: 0,position:'relative' }}>
                                             <img className="col-5 child" alt="widget" src={"/images1/" + item.photoModel[0].photopath} onClick={() => navigate("/detailproperty/" + item.propertyId)} />
                                         </Col>
                                         <Col className="col-7" style={{paddingLeft:'3rem'}}>

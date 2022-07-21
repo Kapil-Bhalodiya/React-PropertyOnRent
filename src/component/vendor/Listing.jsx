@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Form, FormGroup, Input, Row, Col, Button, Container } from 'reactstrap';
+import { Input, Row, Col, Container, Card, CardImg, CardBody, CardSubtitle, CardText, CardTitle, } from 'reactstrap';
 import Header from '../Header'
 import SideBar from "./common/SideBar";
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 
 export default function Listing() {
-
+    const navigate = useNavigate();
     const VendorSession = JSON.parse(sessionStorage.getItem('profile'));
     const [VendorProperty, setVendorProperty] = useState([]);
+
+    const gotodetails=(Id)=>{
+        const propertyId = Id
+        navigate("/detailproperty/"+propertyId)
+    }
 
     const getdata = async () => {
 
@@ -47,28 +52,53 @@ export default function Listing() {
                                 </select>
                             </Col>
                         </Row>
-                        {VendorProperty.map((item) => (
-                            <Row className="allproperty-result">
-                                <Col className="col-5" style={{ padding : 0}}>
-                                    <img alt="widget" src="/images1/b.jpg" />
-                                </Col>
-                                <Col className="col-6" style={{paddingLeft : 50}}>
-                                    <i style={{ float: 'right' }} className="fa fa-trash delete" />
-                                    <a href="#">Apartment</a>
-                                    <h4><Link to={"/detailproperty/" + item.propertyId}>{item.propertyName}</Link></h4>
-                                    <i className="fa fa-map-marker"></i> Gujarat, Surat
-                                    <p><b>{item.price}</b>/mo</p>
-                                    <ul style={{ padding: 'initial', display: 'flex', justifyContent: 'space-between' }}>
-                                        {/* <li style={{ borderRight: '2xp solid' }}><i className="fa fa-bed icon" /> <label>Beds : 03</label></li>
-                                <li><i className="fa fa-shower icon" /> Bath : 02 </li> */}
-                                        <li><i className="fa fa-eye icon" /> Booked :  </li>
-                                    </ul>
-                                </Col>
-                                {/* <Col className="col-2" style={{ width: 'auto' }}>
-                                    <img alt="widget" src="/images1/b.jpg" />
-                                </Col> */}
-                            </Row>
-                        ))}
+                        <Row className="allproperty-result">
+                            {VendorProperty.map((item) => (
+                                <Card className='card-main' style={{ width: "30%", margin: "1rem" ,cursor:'pointer'}} onClick={()=>gotodetails(item.propertyId)}>
+                                    <CardImg
+                                        alt={"/images1/" + item.photoModel[0].photopath}
+                                        src={"/images1/" + item.photoModel[0].photopath}
+                                        width="50%"
+                                        height="50%" />
+                                    <section className='card-propertytype'>
+                                        <a href='#' style={{ textDecoration: "none", color: "#00C194" }}>{item.propertyTypeModel.propertytypeName}</a>
+                                    </section>
+                                    <CardBody style={{ padding: 20 }}>
+                                        <CardTitle tag="h3">
+                                            <p key={item.propertyId}>{item.propertyName}</p>
+                                        </CardTitle>
+                                        <CardSubtitle style={{ padding: '10px 10px 10px 0px' }}
+                                            className="mb-2 text-muted"
+                                            tag="h6">
+                                            <i className="fa fa-map-marker"></i> {item.cityModel.cityName}
+                                        </CardSubtitle>
+                                        <CardText>
+                                            <ul style={{ display: 'flex', justifyContent: 'space-between', padding: '0' }}>
+                                                <li><i className="fa fa-bed"></i> Area: {item.area} sq.ft</li>
+                                                <li style={{ float: 'right' }}><i className="fa fa-bath"></i> Rent: {item.price} Rs</li>
+                                            </ul>
+                                            <i className="fa fa-address-card"></i>  {item.address}<br />
+                                            <br />
+                                        </CardText>
+                                    </CardBody>
+                                </Card>
+                                // <>
+                                //     <Col className="col-2" style={{ padding: 0 }}>
+                                //         <img alt="widget" src="/images1/b.jpg" />
+                                //     </Col>
+                                //     <Col className="col-6" style={{ paddingLeft: 50 }}>
+                                //         <i style={{ float: 'right' }} className="fa fa-trash delete" />
+                                //         <a href="#">Apartment</a>
+                                //         <h4><Link to={"/detailproperty/" + item.propertyId}>{item.propertyName}</Link></h4>
+                                //         <i className="fa fa-map-marker"></i> Gujarat, Surat
+                                //         <p><b>{item.price}</b>/mo</p>
+                                //         <ul style={{ padding: 'initial', display: 'flex', justifyContent: 'space-between' }}>
+                                //             <li><i className="fa fa-eye icon" /> Booked :  </li>
+                                //         </ul>
+                                //     </Col>
+                                // </>
+                            ))}
+                        </Row>
                     </Col>
                 </Row>
             </Container>

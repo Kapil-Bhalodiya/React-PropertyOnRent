@@ -6,7 +6,7 @@ import { Form, FormGroup, Input, Row, Col, Button, Modal, ModalHeader, ModalBody
 
 
 export default function User() {
-    
+
     const SessionId = JSON.parse(sessionStorage.getItem("profile"));
     const [UserProperty, setUserProperty] = useState([]);
     const getdata = async () => {
@@ -24,7 +24,7 @@ export default function User() {
     }, [])
     return (
         <>
-           <Row className="col-12" style={{ backgroundColor: '#F5F7FB' }}>
+            <Row className="col-12" style={{ backgroundColor: '#F5F7FB' }}>
                 <Col className='m-4'>
                     <h5><p>YOUR LISTING</p></h5>
                     <hr />
@@ -43,32 +43,39 @@ export default function User() {
                             </select>
                         </Col>
                     </Row>
-                    {UserProperty.map((item) => (
-                        console.log("item :",item),
-                            <Row className="allproperty-result">
-                                <Col className="col-2" style={{ width: 'auto' }}>
-                                    <a href="#"><img alt="widget" src={"/images1/" + item.propertyModel.photoModel[0].photopath} onClick={""} className="relatedproperty" /></a>
-                                    {/* <img alt="widget" src="/images1/b.jpg" /> */}
-                                </Col>
-                                <Col className="col-3">
-                                    <i style={{ float: 'right' }} className="fa fa-trash delete" />
-                                    <a href="#">{item.propertyModel.propertyTypeModel.propertytypeName}</a>
-                                    <h4><Link to={"/detailproperty/"+item.propertyModel.propertyId}>{item.propertyModel.propertyName}</Link></h4>
-                                    <i className="fa fa-map-marker"></i> Gujarat, Surat
-                                    <p><b><i className="fa fa-coins icon" /> <label>₹{item.price}/day</label></b></p>
-                                    <ul style={{ padding: 'initial', display: 'flex', justifyContent: 'space-between' }}>
-                                        {/* <li style={{ borderRight: '2xp solid' }}><i className="fa fa-bed icon" /> <label>Beds : 03</label></li>
-                                <li><i className="fa fa-shower icon" /> Bath : 02 </li> */}
-                                        <li><i className="fa fa-eye icon" /> Booked : 02 </li>
+                    <Row className="allproperty-result">
+                        {UserProperty.map((item) => (
+                            
+                            <Col className="col-6" style={{pointerEvents :'none'}}>
+                                {console.log(item)}
+                            <div class="dashboard-listings-item fl-wrap">
+                            <div class="dashboard-listings-item_img">
+                                <div class="bg-wrap">
+                                <img src={"/images1/" + item.propertyModel.photoModel[0].photopath} alt="" style={{ width: "100%" }} />
+                                </div>
+                            </div>
+                            <div class="dashboard-listings-item_content">
+                            <h4><Link to={"/detailproperty/" + item.propertyModel.propertyId}>{item.propertyModel.propertyName}</Link></h4>
+                                <div class="geodir-category-location">
+                                    <a href="#"><i class="fas fa-map-marker-alt"></i><span> {item.propertyModel.address} , {item.propertyModel.cityModel.cityName}</span></a>
+                                </div>
+                                <p><b><i className="fa fa-coins icon" /> <label>₹{item.price}/day</label></b></p>
+                                <div class="dashboard-listings-item_opt">
+                                    <span class="viewed-counter"><i class="fas fa-eye"></i> Viewed -  24 </span>
+                                    <ul>
+                                        <li><a href="#" class="tolt" data-microtip-position="top-left" data-tooltip="Delete"><i class="far fa-trash-alt"></i></a></li>
                                     </ul>
-                                </Col>
-                                {/* <Col className="col-2" style={{ width: 'auto' }}>
-                                    <img alt="widget" src="/images1/b.jpg" />
-                                </Col> */}
-                            </Row>
+                                </div>
+                            </div>
+                        </div>
+                        </Col>
                         ))}
+                    </Row>
+                    <Row>
+                    
+                    </Row>
                 </Col>
-            </Row>                  
+            </Row>
         </>
     )
 }

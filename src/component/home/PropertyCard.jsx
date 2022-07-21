@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, CardImg, CardBody, CardSubtitle, CardText, CardTitle, Container, Button} from 'reactstrap';
+import { Row, Card, CardImg, CardBody, CardSubtitle, CardText, CardTitle, Container, Button} from 'reactstrap';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 
 export default function PropertyCard() {
     const navigate = useNavigate()
     const [Property, setProprty] = useState([]);
-    const [PropertyId, setPropertyId] = useState("");
-    const image="";
+    
     const getdata = async () =>  {
             await axios.get("http://localhost:8074/property/get").then(
             (response) => {
@@ -43,7 +42,6 @@ export default function PropertyCard() {
                 </Row>
                 <Row>
                         {Property.map((item, i) => (
-                            
                             <Card className='card-main' style={{width:"30%",margin:"1rem"}}>
                                 <CardImg
                                     alt={"/images1/"+item.photoModel[0].photopath}
@@ -67,7 +65,7 @@ export default function PropertyCard() {
                                             <li><i className="fa fa-bed"></i> Area: {item.area} sq.ft</li>
                                             <li style={{ float: 'right' }}><i className="fa fa-bath"></i> Rent: {item.price} Rs</li>
                                         </ul>
-                                        <i className="fa fa-address-card"></i>  {item.address}<br/>
+                                        <i className="fa fa-address-card"></i>{item.address}<br/>
                                         <br/>
                                     </CardText>
                                     <Button onClick={()=>gotodetails(item.propertyId)}>View Property</Button>

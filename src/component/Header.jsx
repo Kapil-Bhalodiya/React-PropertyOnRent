@@ -19,7 +19,7 @@ import SideBar from "./vendor/common/SideBar";
 
 function Header() {
     let naviage = useNavigate();
-    const checkToken = localStorage.getItem("user");
+    const checkToken = sessionStorage.getItem("user");
     const [isOpen, setIsOpen] = React.useState(true);
 
     return (

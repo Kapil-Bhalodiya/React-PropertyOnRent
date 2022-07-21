@@ -94,7 +94,8 @@ export default function ListProperty() {
                 "registrationId":SessionId.registrationId
             },
             "price": totalPrice1,
-            "eventPackageId": eventPackage.eventPackageId
+            "eventPackageId": eventPackage.eventPackageId,
+            "active" : true
         }));
     }
 

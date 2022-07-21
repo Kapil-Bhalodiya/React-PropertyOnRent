@@ -10,24 +10,23 @@ const SideBar = () => {
     toggleMenu.classList.toggle('active');
   }
   const handleLogout = () => {
-    console.log("yup");
-    localStorage.removeItem("user");
-    localStorage.removeItem("profile");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("profile");
     nevigate("/");
   }
 
 
-  const profileName= JSON.parse(localStorage.getItem("profile"))
+  const profileName= JSON.parse(sessionStorage.getItem("profile"))
 
   
 
   return (
     <React.Fragment>
       <div className="col-12" onClick={menuToggle}>
-        <div className='profile-pic'>{profileName.firstName[0]+""+profileName.lastName[0]}</div>
+        <div className='profile-pic'>{profileName.firstName[0]}</div>
       </div>
       <section className="vendor-navlink">
-        {JSON.parse(localStorage.getItem("user")).role == '[ROLE_Vendor]' ?
+        {JSON.parse(sessionStorage.getItem("user")).role == '[ROLE_Vendor]' ?
           <ul>
             <li>
               <Link to="/vendor">

@@ -21,22 +21,21 @@ const Login = () => {
   }
 
   const getUserDetail = async (emailId) => {
-    let res = await axios.get('http://localhost:8008/login/profile/'+emailId);
-    if(res.status == 200) sessionStorage.setItem("profile",JSON.stringify(res.data));
+    let res = await axios.get('http://localhost:8008/login/profile/' + emailId);
+    if (res.status == 200) sessionStorage.setItem("profile", JSON.stringify(res.data));
   }
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    let res = await axios.post('http://localhost:8008/login/authentication', state);
-    console.log("status : "+res.status);
-    if (res.status === 200) {
+    try {
+      let res = await axios.post('http://localhost:8008/login/authentication', state);
       sessionStorage.setItem("user", JSON.stringify(res.data));
       getUserDetail(JSON.parse(sessionStorage.getItem("user")).emailId);
       res.data.role == '[ROLE_User]' ? navigate("/user") : navigate("/vendor");
-    } else {
-      alert("Wrong EmailId ");
-      console.log("Wrong EmailId and Password");
+    } catch (error) {
+      alert("Wrong EmailId or Password.. ");
     }
+
   }
 
   return (
@@ -60,7 +59,7 @@ const Login = () => {
                     Not a member? <Link to="/register" className='signinlink'> Sign up now </Link>
                   </Col>
                 </Row>
-                
+
               </Form>
             </Col>
             <Col className='fadeRight-content'>

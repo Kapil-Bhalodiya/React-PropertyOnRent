@@ -2,8 +2,6 @@ import React from "react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Form, FormGroup, Input, Row, Col, Button, Modal, ModalHeader, ModalBody, Container } from 'reactstrap';
-// import Modal from "./Modal";
-
 
 export default function User() {
     const [subamenities, setsubAmenities] = useState({});

@@ -1,11 +1,42 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col } from 'reactstrap';
 import Banner from '../../images/index/slider4.jpg';
 import Aboutwrap from './Aboutwrap';
 import PropertyCard from './PropertyCard';
-import Footer from '../Footer';
+import getPropertyApi from '../../service/getPropertyApi';
 
-export default function index() {
+
+
+export default function Index() {
+    const [propertycity, setPropertyCity] = useState({});
+    const [type, setType] = useState({});
+
+    const onCityChange = (e) => {
+        setPropertyCity(e.target.value)
+    }
+
+    const onPropertyTypeChange = (e) => {
+        setType(e.target.value)
+    }
+
+    const [city, setCity] = useState([]);
+    const getCity = async (e) => {
+        let res = await getPropertyApi.getCityList(e.target.value);
+        setCity(res.data);
+    }
+
+    const [states, setStates] = useState([]);
+    const getStates = async () => {
+        let res = await getPropertyApi.getStateList();
+        console.log("state : "+res);
+        setStates(res.data);
+    }
+
+    useEffect(() => {
+        getStates()
+    }, []);
+
+
     return (
         <>
             <section style={{ backgroundImage: `url(${Banner})` }} className="banner">
@@ -18,7 +49,7 @@ export default function index() {
                                     <label for="apartments">
                                         <i class="fa fa-building"></i>
                                         <span>Farm</span>
-                                        <input type="radio" name="rtcl_category" id="apartments" value="apartments"/>
+                                        <input type="radio" name="rtcl_category" id="apartments" value="apartments" />
                                     </label>
                                 </li>
                                 <li>
@@ -52,31 +83,26 @@ export default function index() {
                                                     <div class="rld-single-input item">
                                                         <input type="text" placeholder="Enter Kewword here..." />
                                                     </div>
-                                                    <div class="rld-single-select ml-22">
-                                                        <select class="select single-select">
-                                                            <option value="1">Property Type</option>
-                                                            <option value="2">Family House</option>
-                                                            <option value="3">Apartment</option>
-                                                            <option value="3">Bunglow</option>
-                                                        </select>
+                                                    <div class="rld-single-select item">
+                                                    <select className='custom-select' name="state_id" onChange={getCity} placeholder="All States">
+                                                        <option value="1">All States</option>
+                                                        {states.map(obj => (
+                                                            <option value={obj.state_id}>{obj.state_name}</option>
+                                                        ))}
+                                                    </select>
                                                     </div>
                                                     <div class="rld-single-select item">
-                                                        <select class="select single-select">
-                                                            <option value="1">All Cities</option>
-                                                            <option value="2">Surat</option>
-                                                            <option value="3">Ahemdabad</option>
-                                                            <option value="3">Pune</option>
+                                                        <select className='custom-select' name="city_id" onChange={onCityChange} placeholder="All City">
+                                                            <option value="1">All City</option>
+                                                            {city.map(obj => (
+                                                                <option value={obj.city_id}>{obj.city_name}</option>
+                                                            ))}
                                                         </select>
                                                     </div>
                                                     <div class="item rt-filter-btn">
-                                                        <div class="dropdown-filter item">
-                                                            <span>
-                                                                <i class="fas fa-sliders-h"></i>
-                                                            </span>
-                                                        </div>
                                                         <div class="filter-button-area">
-                                                            <a class="filter-btn" href="with-sidebar.html"><span>Search</span><i
-                                                                class="fa fa-search"></i></a>
+                                                            <a class="filter-btn" href="with-sidebar.html"><span>Search</span>
+                                                            <i class="fa fa-search"></i></a>
                                                         </div>
                                                     </div>
                                                 </div>

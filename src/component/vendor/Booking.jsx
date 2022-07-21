@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, FormGroup, Input, Row, Col, Button, Container } from 'reactstrap';
-import Header from '../Header'
-import SideBar from "./common/SideBar";
+import { Input, Row, Col, Container } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -28,7 +26,7 @@ export default function Listing() {
 
     return (
         <Container>
-            <Row className="col-12" style={{ backgroundColor: '#F5F7FB',margin:0 }}>
+            <Row className="col-12" style={{ backgroundColor: '#F5F7FB', margin: 0 }}>
                 <Col>
                     {/* <div className='list-img'>
                         <img src="/images1/birthday2.jpg" alt="Snow" style={{ width: "100%" }} />
@@ -50,29 +48,28 @@ export default function Listing() {
                             </select>
                         </Col>
                     </Row>
+                    <Row>
                     {BookedProperty.map((item) => (
-                        <Row className="allproperty-result">
-                        <Col className="col-2" style={{ width: 'auto' }}>
-                            <a href="#"><img alt="widget" src={"/images1/" + item.propertyModel.photoModel[0].photopath} onClick={""} className="relatedproperty" /></a>
-                            {/* <img alt="widget" src="/images1/b.jpg" /> */}
+                        <Col className="col-6">
+                            {console.log(item)}
+                            <Col className="bookings-item fl-wrap">
+                                <div class="bookings-item-header fl-wrap">
+                                    <img src={"/images1/"+item.propertyModel.photoModel[0].photopath} alt="" />
+                                    <h4>For <a href={"/detailproperty/"+item.propertyModel.propertyId} target="_blank" style={{textDecoration : 'none',color:'#00a376'}}>{item.propertyModel.propertyName}</a></h4>
+                                    {/* <span class="new-bookmark">New</span> */}
+                                </div>
+                                <div class="bookings-item-content fl-wrap">
+                                    <ul>
+                                        <li>Name : <span>{item.registrationModel.firstname + " " +item.registrationModel.firstname}</span></li>
+                                        <li>Phone : <span>{item.registrationModel.contactNumber}</span></li>
+                                        <li>Date : <span>{item.checkIn} to {item.checkOut}</span></li>
+                                        <li>Event : <span>{item.eventPackageId}</span></li>
+                                    </ul>
+                                </div>
+                            </Col>
                         </Col>
-                        <Col className="col-3">
-                            <i style={{ float: 'right' }} className="fa fa-trash delete" />
-                            <a href="#">{item.propertyModel.propertyTypeModel.propertytypeName}</a>
-                            <h4><Link to={"/detailproperty/"+item.propertyModel.propertyId}>{item.propertyModel.propertyName}</Link></h4>
-                            <i className="fa fa-map-marker"></i> Gujarat, Surat
-                            <p><b><i className="fa fa-coins icon" /> <label>₹{item.price}/day</label></b></p>
-                            <ul style={{ padding: 'initial', display: 'flex', justifyContent: 'space-between' }}>
-                                {/* <li style={{ borderRight: '2xp solid' }}><i className="fa fa-bed icon" /> <label>Beds : 03</label></li>
-                        <li><i className="fa fa-shower icon" /> Bath : 02 </li> */}
-                                <li><i className="fa fa-eye icon" /> Booked : 02 </li>
-                            </ul>
-                        </Col>
-                        {/* <Col className="col-2" style={{ width: 'auto' }}>
-                            <img alt="widget" src="/images1/b.jpg" />
-                        </Col> */}
-                    </Row>
                     ))}
+                    </Row>
                 </Col>
             </Row>
         </Container>
