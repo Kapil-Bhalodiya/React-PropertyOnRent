@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, CardImg, CardBody, CardSubtitle, CardText, CardTitle, Container, Button} from 'reactstrap';
-// import pic from '../images/authentication/auth.svg';
-import about3 from '../images/about14.jpg';
-import getservice from '../../service/getPropertyApi';
-//import img from '../../../public/images1/Diamond Villa_1.jpg';
 import axios from 'axios';
-//import { Button } from 'bootstrap';
 import {useNavigate} from 'react-router-dom';
 
 export default function PropertyCard() {

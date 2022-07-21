@@ -1,6 +1,6 @@
 import React from 'react'
 import { Container, Row, Col } from 'reactstrap';
-import Banner from '../images/index/slider4.jpg';
+import Banner from '../../images/index/slider4.jpg';
 import Aboutwrap from './Aboutwrap';
 import PropertyCard from './PropertyCard';
 import Footer from '../Footer';

@@ -3,9 +3,12 @@ import { Button, Form, FormGroup, Input, Row, Container, Col } from 'reactstrap'
 import { Link, useNavigate } from 'react-router-dom';
 import pic from '../images/auth.svg';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Login = ()=> {
+
+
 
   const [state,setState] = React.useState({
     emailId:'',
@@ -37,6 +40,7 @@ const Login = ()=> {
 
   return (
     <>
+    
     {/* <Header/> */}
       <section className='section-reg'>
         <Container>
@@ -53,6 +57,7 @@ const Login = ()=> {
                 </FormGroup>
 
                 <Button onClick={handleLogin} className="button-save">Login</Button>
+
                 {/* <FormGroup> */}
                 <Row className='mt-3'>
                   <Col>

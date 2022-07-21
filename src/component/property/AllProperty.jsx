@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Breadcrumb, BreadcrumbItem, FormGroup, Form, Input, Label,Button } from "reactstrap";
-// import Button from '../common/Button';
-import about3 from '../images/about14.jpg';
+import { Container, Row, Col, Breadcrumb, BreadcrumbItem, FormGroup, Form, Input, Label, Button } from "reactstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import getPropertyApi from '../../service/getPropertyApi';
 
 export default function AllProperty() {
     const navigate = useNavigate()
     const [propertyData, setPropertyData] = useState([]);
     const [latestpropertyData, setLatestPropertyData] = useState([]);
-   
+
 
     const getdata = async () => {
         let res = await axios.get("http://localhost:8074/property/getall");
@@ -19,10 +17,10 @@ export default function AllProperty() {
     }
 
     const selectionChange = (e) => {
-        axios.get("http://localhost:8074/property/getpropertypricewise/"+e.target.value)
-        .then(res => {
-            setPropertyData(res.data);
-        }).catch(err => console.error(err));
+        axios.get("http://localhost:8074/property/getpropertypricewise/" + e.target.value)
+            .then(res => {
+                setPropertyData(res.data);
+            }).catch(err => console.error(err));
     }
 
     const getlatestdata = async () => {
@@ -39,7 +37,7 @@ export default function AllProperty() {
     const [states, setStates] = useState([]);
     const getStates = async () => {
         let res = await getPropertyApi.getStateList();
-        console.log("All data :=",res)
+        console.log("All data :=", res)
         setStates(res.data);
     }
 
@@ -49,23 +47,20 @@ export default function AllProperty() {
         setCity(res.data);
     }
 
-    const getProperty =  async (type,propertycity) => {
+    const getProperty = async (type, propertycity) => {
         // e.preventDefault();
-        console.log("hello");
-        console.log("type is : ",type)
-        console.log("property city  is : ",propertycity)
-        let res = await getPropertyApi.getPropertyList(type,propertycity);
+        let res = await getPropertyApi.getPropertyList(type, propertycity);
         console.log(res)
         setPropertyData(res.data);
         return false
     }
 
-    const [type,setType] = useState({});
+    const [type, setType] = useState({});
     const onPropertyTypeChange = (e) => {
         setType(e.target.value)
     }
 
-    const [propertycity,setPropertyCity] = useState({});
+    const [propertycity, setPropertyCity] = useState({});
     const onCityChange = (e) => {
         setPropertyCity(e.target.value)
     }
@@ -75,7 +70,7 @@ export default function AllProperty() {
         getlatestdata()
         getPropertyType()
         getStates()
-    },[]);
+    }, []);
 
     return (
         <>
@@ -98,7 +93,7 @@ export default function AllProperty() {
                 </aside> */}
                 <aside className="grid-property">
                     <Container>
-                 
+
                         <Row>
                             <Col className="col-4 search-allproperty-col">
                                 <article className="advance-search">
@@ -134,19 +129,19 @@ export default function AllProperty() {
                                 <article className="advance-search">
                                     <h4 className="animate-character">Latest Property</h4>
                                     {latestpropertyData.map((item, i) => (
-                                    <>
-                                    <Row>
-                                        <Col className="col-5">
-                                            <a href="#"><img alt="widget" src={"/images1/"+item.photoModel[0].photopath} onClick={()=>navigate("/detailproperty/"+item.propertyId)} className="relatedproperty" /></a>
-                                        </Col>
-                                        <Col className="item-content">
-                                        <h5><b><Link to={"/detailproperty/"+item.propertyId}>{item.propertyName}</Link></b></h5>
-                                            <i className="fa fa-map-marker icon"></i>{item.cityModel.cityName}, {item.cityModel.stateModel.stateName}<br />
-                                            <i className="fa fa-coins icon" /> <label>₹{item.price}/day</label>
-                                        </Col>
-                                    </Row>
-                                    <hr />
-                                    </>
+                                        <>
+                                            <Row>
+                                                <Col className="col-5">
+                                                    <a href="#"><img alt="widget" src={"/images1/" + item.photoModel[0].photopath} onClick={() => navigate("/detailproperty/" + item.propertyId)} className="relatedproperty" /></a>
+                                                </Col>
+                                                <Col className="item-content">
+                                                    <h5><b><Link to={"/detailproperty/" + item.propertyId}>{item.propertyName}</Link></b></h5>
+                                                    <i className="fa fa-map-marker icon"></i>{item.cityModel.cityName}, {item.cityModel.stateModel.stateName}<br />
+                                                    <i className="fa fa-coins icon" /> <label>₹{item.price}/day</label>
+                                                </Col>
+                                            </Row>
+                                            <hr />
+                                        </>
                                     ))}
                                 </article>
                             </Col>
@@ -156,7 +151,7 @@ export default function AllProperty() {
                                         <h5>Showing results</h5>
                                     </Col>
                                     <Col className="col-6" style={{ textAlign: 'right' }}>
-                                        <label style={{marginRight:"5px"}}>Sort by Price: </label>
+                                        <label style={{ marginRight: "5px" }}>Sort by Price: </label>
                                         <select className="custom-select12" onChange={selectionChange}>
                                             <option id="option" value="1">Default</option>
                                             <option className="option" value="2">Low to High Price</option>
@@ -165,30 +160,30 @@ export default function AllProperty() {
                                     </Col>
                                 </Row>
                                 {propertyData.map((item, i) => (
-                                    
-                                <Row className="allproperty-result">
-                                    <Row style={{marginTop:"-12px"}}>
-                                        <Col style={{textAlign:"end"}}>
-                                            <section className='tag-propertytype'>
-                                                <a href='#' style={{textDecoration:"none", color:"#00C194"}}>{item.propertyTypeModel.propertytypeName}</a>
-                                            </section>
+                                    <Row className="allproperty-result">
+                                        <Row>
+                                            <Col style={{ textAlign: "end",position:'absolute' }}>
+                                                <section className='tag-propertytype'>
+                                                    <a href='#' style={{ textDecoration: "none", color: "#00C194" }}>{item.propertyTypeModel.propertytypeName}</a>
+                                                </section>
+                                            </Col>
+                                        </Row>
+                                        <Col className="col-5" style={{ padding: 0 }}>
+                                            <img className="col-5 child" alt="widget" src={"/images1/" + item.photoModel[0].photopath} onClick={() => navigate("/detailproperty/" + item.propertyId)} />
+                                        </Col>
+                                        <Col className="col-7" style={{paddingLeft:'3rem'}}>
+                                            <h4><b><Link to={"/detailproperty/" + item.propertyId}>{item.propertyName}</Link></b></h4>
+                                            <i className="fa fa-map-marker icon" /> {item.address}<br />
+                                            <i className="fa fa-map-marker icon" /> {item.cityModel.cityName}, {item.cityModel.stateModel.stateName}, {item.pincode}
+
+
+                                            <ul style={{ padding: 'initial', display: 'flex', justifyContent: 'space-between' }}>
+                                                <li><i className="fa fa-coins icon" /> <label><b>₹{item.price}</b>/day</label></li>
+                                                <li style={{ marginRight: "2rem" }}><i className="fa fa-chart-area icon" /><label><b>{item.area}</b></label> Sq.ft</li>
+                                            </ul>
                                         </Col>
                                     </Row>
-                                    <Col className="col-5">
-                                        <img className="col-5 child" alt="widget" src={"/images1/"+item.photoModel[0].photopath} onClick={()=>navigate("/detailproperty/"+item.propertyId)}/>
-                                    </Col>
-                                    <Col className="col-7">
-                                        <h4><b><Link to={"/detailproperty/"+item.propertyId}>{item.propertyName}</Link></b></h4>
-                                        <i className="fa fa-map-marker icon"/> {item.address}<br/>
-                                        <i className="fa fa-map-marker icon"/> {item.cityModel.cityName}, {item.cityModel.stateModel.stateName}, {item.pincode}
-                                    
-                                        <ul style={{ padding: 'initial', display: 'flex', justifyContent: 'space-between' }}>
-                                            <li><i className="fa fa-coins icon" /> <label><b>₹{item.price}</b>/day</label></li>
-                                            <li style={{marginRight:"2rem"}}><i className="fa fa-chart-area icon" /><label><b>{item.area}</b></label> Sq.ft</li>
-                                        </ul>
-                                    </Col>
-                                </Row>
-                                 ))}
+                                ))}
                             </Col>
                         </Row>
                     </Container>

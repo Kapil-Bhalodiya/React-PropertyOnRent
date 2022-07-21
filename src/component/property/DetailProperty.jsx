@@ -1,23 +1,58 @@
-import { Button } from "bootstrap";
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Container, Row, Col, Form, FormGroup, Input, Badge} from "reactstrap";
-import ButtonSend from '../common/Button';
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Form, FormGroup, Input, Badge, Button } from "reactstrap";
+import DatePicker from 'react-datetime';
+import 'react-datetime/css/react-datetime.css';
 import axios from "axios";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import moment from "moment";
 
-export default function ListProperty(props) {
+export default function ListProperty() {
     const navigate = useNavigate();
     const { id } = useParams();
     const [photoData, setPhotoData] = useState([]);
     const [propertyData, setProprtyData] = useState([]);
     const [latestpropertyData, setLatestPropertyData] = useState([]);
+    const [eventPackage, setEventPackage] = useState({});
+    const [event, setEvent] = useState([]);
+    const SessionId = JSON.parse(sessionStorage.getItem("profile"));
+    const role = JSON.parse(sessionStorage.getItem("user"));
+    const [values, setValues] = useState({});
+    var totalPrice1 = propertyData[0]?.price;
 
+
+    useEffect(() => {
+        getdata(id)
+        getEvent()
+        getlatestdata()
+    }, [id])
+
+    const [bookedDates, setbookedDates] = useState([]);
     const getdata = async (id) => {
         console.log("id " + id)
         let res = await axios.get("http://localhost:8074/property/getall/" + id);
         setProprtyData(res.data);
         getphotodata(res.data);
+        await axios.get("http://localhost:8074/viewbooking/getbookeddate/" + id)
+            .then(res => {
+                let data = res.data;
+                console.log("Dataaaaaaaaaa:", data);
+                data.map(obj => {
+                    const start = new Date(obj.checkIn);
+                    const end = new Date(obj.checkOut);
+
+                    // console.log("start :",start);
+                    // console.log("end :",end);
+
+                    let loop = new Date(start);
+                    while (loop <= end) {
+                        //console.log("loop :",loop);
+                        let newDate = loop.setDate(loop.getDate() + 1);
+                        bookedDates.push(moment(newDate).format('YYYY-MM-DD'));
+                        loop = new Date(newDate);
+                    }
+                    //console.log("Booked Date :",bookedDates)
+                });
+            })
     }
 
     const getlatestdata = async () => {
@@ -36,37 +71,73 @@ export default function ListProperty(props) {
         setPhotoData(photopaths);
     }
 
-    const [event, setEvent] = useState([]);
-
     const getEvent = async () => {
         let res = await axios.get("http://localhost:8078/events/get");
-        setEvent(res.data); 
+        setEvent(res.data);
     }
 
-    const [eventsId,setEventsId] = useState(0);
+    const [eventsId, setEventsId] = useState(0);
 
     const onEventChange = (e) => {
-        console.log("Target Value",e.target.value)
-        setEventsId(e.target.value)  
+        console.log("Target Value", e.target.value)
+        setEventsId(e.target.value)
     }
 
-    const [eventPackage,setEventPackage] = useState({});
-    const onEventRadioChange = (event_id,event_package_name,rate) => {
+    const onEventRadioChange = (eventPackageId, eventPackageName, rate) => {
         setEventPackage({
-            "eventId":event_id,
-            "eventPackageName":event_package_name,
-            "rate":rate
+            "eventPackageId": eventPackageId,
+            "eventPackageName": eventPackageName,
+            "rate": rate
         })
     }
 
-    var totalPrice1 = propertyData[0]?.price;
+    const handleBookingSubmit = async (e) => {
+        e.preventDefault();
+        console.log(values);
+        await axios.post("http://localhost:8076/booking/add", values).then(
+            (response) => {
+                console.log(response);
+                alert("Add Successfully");
+            }, (error) => {
+                console.log(error);
+                alert("operation fail");
+            })
+    }
 
-    useEffect(() => {
-        getdata(id)
-        getEvent()
-        getlatestdata()
-    }, [id])
+    const handleChange = (e) => {
+        console.log([e.target.name] + " " + e.target.value,)
+        setValues(prevState => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+            "propertyModel": {
+                "propertyId": propertyData[0]?.propertyId
+            },
+            "registrationModel": {
+                "registrationId": SessionId.registrationId
+            },
+            "price": totalPrice1,
+            "eventPackageId": eventPackage.eventPackageId
+        }));
+    }
 
+
+
+
+    // disable the list of custom dates
+    const customDates = ['2022-07-28', '2022-07-24', '2022-07-22'];
+    const disableCustomDt = current => {
+        console.log(!bookedDates.includes(current.format('YYYY-MM-DD')));
+        return !bookedDates.includes(current.format('YYYY-MM-DD'));
+    }
+
+    // disable past dates
+
+    const yesterday = moment().subtract(1, 'day');
+
+    const disablePastDt = current => {
+        console.log(current.isAfter(yesterday));
+        return current.isAfter(yesterday);
+    };
 
     return (
         <>
@@ -90,6 +161,15 @@ export default function ListProperty(props) {
                     </Row>
                     <Row>
                         <Col className="col-8">
+                            {/* <aside className="img-zoom-container">
+                                <ImageSlider
+                                    width={"100%"}
+                                    height={"420px"}
+                                    images={photoData}
+                                    showBullets={true}
+                                    showNavs={true}
+                                />
+                             </aside> */}
                             <aside className="img-zoom-container">
                                 <img src={"/images1/" + propertyData[0]?.photoModel[0].photopath} alt="img" style={{ height: "420px", width: '50%' }} />
                                 <img src={"/images1/" + propertyData[0]?.photoModel[1].photopath} alt="img" style={{ height: "420px", width: '50%' }} />
@@ -150,7 +230,7 @@ export default function ListProperty(props) {
                                         )}
                                     </ul>
                                 </article>
-                                <article className="propertyevents" style={{margin:"0px 3px"}}>
+                                <article className="propertyevents" style={{ margin: "0px 3px" }}>
                                     <h3>Events & Event Packages</h3>
                                     <article >
                                         <Row>
@@ -163,62 +243,110 @@ export default function ListProperty(props) {
                                         </Row>
                                     </article>
                                     <hr />
+                                    {/* <article className="propertyevents" style={{margin:"0px 3px"}}>
+                                    {
+                                        
+                                    propertyData[0]?.eventPackagesModels.map(eventPackagesObj => (
+                                        eventPackagesObj.eventsModel.eventsId==eventsId &&
+                                        AccordionData.push({eventid: eventPackagesObj.eventsModel.eventsId},
+                                                            {packageName: eventPackagesObj.packageName},
+                                                            {rate:eventPackagesObj.rate},
+                                                            {packageDescription: eventPackagesObj.packageDescription})
+                                        ))}
+                                        {console.log("Data :::",AccordionData)}
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="col-sm-4">
+                                            {/* <h3>React Accordion</h3>}
+                                            <AccordionList accordionData={AccordionData} handleToggle={handleToggle} toggle={toggle} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </article> */}
                                     <article class="accordion" id="accordionExample">
-                                    {propertyData[0]?.eventPackagesModels.map(eventPackagesObj => (
-                                            eventPackagesObj.eventsModel.eventsId==eventsId &&
+                                        {propertyData[0]?.eventPackagesModels.map(eventPackagesObj => (
+                                            eventPackagesObj.eventsModel.eventsId == eventsId &&
                                             <div class="accordion-item">
-                                                <h2 class="accordion-header" id={"heading"+eventPackagesObj.eventsModel.eventsId}>
-                                                
-                                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse"+eventPackagesObj.eventsModel.eventsId} aria-expanded="true" aria-controls={"collapse"+eventPackagesObj.eventsModel.eventsId}>
-                                                    <strong><Input type="radio" name="eventpackageradio" value={eventPackagesObj.packageName} className="form-check-input" onChange={() => onEventRadioChange(eventPackagesObj.eventPackageId,eventPackagesObj.packageName,eventPackagesObj.rate)} style={{padding:"0.8rem"}}/>{"  "+eventPackagesObj.packageName}<Badge id="event-badge">{eventPackagesObj.rate} ₹</Badge></strong>
-                                                </button>
+                                                <h2 class="accordion-header" id={"heading" + eventPackagesObj.eventsModel.eventsId}>
+
+                                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse" + eventPackagesObj.eventsModel.eventsId} aria-expanded="true" aria-controls={"collapse" + eventPackagesObj.eventsModel.eventsId}>
+                                                        <strong><Input type="radio" name="eventpackageradio" value={eventPackagesObj.packageName} className="form-check-input" onChange={() => onEventRadioChange(eventPackagesObj.eventPackageId, eventPackagesObj.packageName, eventPackagesObj.rate)} style={{ padding: "0.8rem" }} />{"  " + eventPackagesObj.packageName}<Badge id="event-badge">{eventPackagesObj.rate} ₹</Badge></strong>
+                                                    </button>
                                                 </h2>
-                                                <div id={"collapse"+eventPackagesObj.eventsModel.eventsId} class="accordion-collapse collapse show" aria-labelledby={"heading"+eventPackagesObj.eventsModel.eventsId} data-bs-parent="#accordionExample">
-                                                <div class="accordion-body">
-                                                    <text-muted>{eventPackagesObj.packageDescription}</text-muted>
-                                                </div>
+                                                <div id={"collapse" + eventPackagesObj.eventsModel.eventsId} class="accordion-collapse collapse show" aria-labelledby={"heading" + eventPackagesObj.eventsModel.eventsId} data-bs-parent="#accordionExample">
+                                                    <div class="accordion-body">
+                                                        <text-muted>{eventPackagesObj.packageDescription}</text-muted>
+                                                    </div>
                                                 </div>
                                             </div>
-                                    ))}
-                                     </article>
+                                        ))}
+                                    </article>
+                                    {/* <article className="propertyamenities">
+                                        {/* <h3>Selected Event Packages</h3>}
+                                        <ul style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                <li><i class="fa fa-check-circle"></i>
+                                                <label>{eventPackage.eventPackageName}</label></li>
+                                        </ul>
+                                    </article> */}
                                 </article>
                             </aside>
                         </Col>
+
                         <Col className="col-4">
-                        <Row className="col-12">
-                            <article className="advance-search">
-                            <h4>Book Property For Rent</h4>
-                                    <Form>
-                                        <FormGroup>
-                                            <label>Check In</label>
-                                            <input type="date" name="checkin" className="form-control"  placeholder="Check In"/>
-                                        </FormGroup>
-                                        <FormGroup>
-                                            <label>Check Out</label>
-                                            <input type="date" name="checkout" className="form-control" placeholder="Check Out"/>
-                                        </FormGroup>
-                                        <label>Property Rent & Event Packages Rate</label>
-                                        <hr/>
-                                        <article className="_adv_features">
-                                            <ul style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                                <li>Property Rent<span>{"  "+propertyData[0]?.price+"₹"}</span></li>
-                                                {/* {totalPrice1 = propertyData[0]?.price} */}
-                                                {
-                                                    eventPackage.rate != null && 
-                                                    <>
-                                                    <li>Event Package Rate<span>{"  "+eventPackage.rate+"₹"}</span></li>
-                                                    {totalPrice1 = propertyData[0]?.price + eventPackage.rate}
-                                                    </> 
-                                                } 
-                                                {console.log(totalPrice1)}
-                                            </ul>
-                                        </article>
-                                        <hr/>
-                                        <label>Total Payment : ₹<span className="price theme-cl" style={{float:"right"}}>{totalPrice1}</span></label>
-                                        <ButtonSend title='Book It Now' width="100%" height="50px"/>
-                                    </Form>
-                            </article>
-                            </Row>
+                            {role != null &&
+                                <>
+                                    {role.role == "[ROLE_User]" ?
+                                        <Row className="col-12">
+                                            <article className="advance-search">
+                                                <h4>Book Property For Rent</h4>
+                                                <Form>
+                                                    <FormGroup>
+                                                        <label>Check In</label>
+                                                        <DatePicker
+                                                            timeFormat={false}
+                                                            isValidDate={(disableCustomDt)}
+                                                            input={true}
+                                                            min
+                                                            initialViewDate={new Date()}
+                                                            initialValue={new Date()}
+                                                        />
+                                                        {/* <Input type="date" name="checkIn" min={new Date().toISOString().split('T')[0]} className="form-control" placeholder="Check In" onClick={handleChange} /> */}
+                                                    </FormGroup>
+                                                    <FormGroup>
+                                                        <label>Check Out</label>
+                                                        <DatePicker
+                                                            timeFormat={false}
+                                                            isValidDate={disableCustomDt}
+                                                            input={true}
+                                                            initialViewDate={new Date()}
+                                                            initialValue={new Date()}
+                                                        />
+                                                        {/* <Input type="date" name="checkOut" min={new Date().toISOString().split('T')[0]} className="form-control" placeholder="Check Out" onClick={handleChange} /> */}
+                                                    </FormGroup>
+                                                    <label>Property Rent & Event Packages Rate</label>
+                                                    <hr />
+                                                    <article className="_adv_features">
+                                                        <ul style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                            <li>Property Rent<span>{"  " + propertyData[0]?.price + "₹"}</span></li>
+                                                            {/* {totalPrice1 = propertyData[0]?.price} */}
+                                                            {
+                                                                eventPackage.rate != null &&
+                                                                <>
+                                                                    <li>Event Package Rate<span>{"  " + eventPackage.rate + "₹"}</span></li>
+                                                                    <label style={{ display: 'none' }}> {totalPrice1 = propertyData[0]?.price + eventPackage.rate}</label>
+                                                                </>
+                                                            }
+                                                        </ul>
+                                                    </article>
+                                                    <hr />
+                                                    <label style={{ display: 'block' }}>Total Payment : <span className="price theme-cl" style={{ float: "right", fontSize: '20px' }}>{"₹" + totalPrice1}</span></label>
+                                                    <Button style={{ width: "100%" }} onClick={handleBookingSubmit}>Book it Now</Button>
+                                                    {/* <button title="Book It Now" width="100%" height="50px"  type="submit">Send</button> */}
+                                                </Form>
+                                            </article>
+                                        </Row>
+                                        : ""}
+                                </>}
                             <Row className="col-12">
                                 <article className="advance-search">
                                     <h4>Contact Vendor</h4>
@@ -235,7 +363,7 @@ export default function ListProperty(props) {
                                         <FormGroup>
                                             <textarea type="email" id="email" placeholder="Message"></textarea>
                                         </FormGroup>
-                                        <ButtonSend title='Send' width='100%' height='50px' />
+                                        <Button title='Send' width='100%' height='50px'>Send</Button>
                                     </Form>
                                 </article>
                             </Row>

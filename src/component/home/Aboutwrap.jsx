@@ -1,10 +1,10 @@
 import React from 'react'
-import shape7 from '../images/shape8.svg';
-import shape8 from '../images/shape8.svg';
-import shape9 from '../images/shape9.svg';
-import about1 from '../images/about3.jpg';
-import about2 from '../images/about5.jpg';
-import about3 from '../images/about14.jpg';
+import shape7 from '../../images/shape7.svg';
+import shape8 from '../../images/shape8.svg';
+import shape9 from '../../images/shape9.svg';
+import about1 from '../../images/about3.jpg';
+import about2 from '../../images/about5.jpg';
+import about3 from '../../images/about14.jpg';
 import { Col, Container, Row } from 'reactstrap';
 
 export default function aboutwrap() {
