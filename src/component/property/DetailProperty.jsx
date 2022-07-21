@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Form, FormGroup, Input, Badge,Button } from "reactstrap";
-// import Button from '../common/Button';
+import { Container, Row, Col, Form, FormGroup, Input, Badge, Button } from "reactstrap";
+import DatePicker from 'react-datetime';
+import 'react-datetime/css/react-datetime.css';
 import axios from "axios";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import moment from "moment";
@@ -25,12 +26,33 @@ export default function ListProperty() {
         getlatestdata()
     }, [id])
 
-
+    const [bookedDates, setbookedDates] = useState([]);
     const getdata = async (id) => {
         console.log("id " + id)
         let res = await axios.get("http://localhost:8074/property/getall/" + id);
         setProprtyData(res.data);
         getphotodata(res.data);
+        await axios.get("http://localhost:8074/viewbooking/getbookeddate/" + id)
+            .then(res => {
+                let data = res.data;
+                console.log("Dataaaaaaaaaa:", data);
+                data.map(obj => {
+                    const start = new Date(obj.checkIn);
+                    const end = new Date(obj.checkOut);
+
+                    // console.log("start :",start);
+                    // console.log("end :",end);
+
+                    let loop = new Date(start);
+                    while (loop <= end) {
+                        //console.log("loop :",loop);
+                        let newDate = loop.setDate(loop.getDate() + 1);
+                        bookedDates.push(moment(newDate).format('YYYY-MM-DD'));
+                        loop = new Date(newDate);
+                    }
+                    //console.log("Booked Date :",bookedDates)
+                });
+            })
     }
 
     const getlatestdata = async () => {
@@ -60,7 +82,7 @@ export default function ListProperty() {
         console.log("Target Value", e.target.value)
         setEventsId(e.target.value)
     }
-    
+
     const onEventRadioChange = (eventPackageId, eventPackageName, rate) => {
         setEventPackage({
             "eventPackageId": eventPackageId,
@@ -83,21 +105,39 @@ export default function ListProperty() {
     }
 
     const handleChange = (e) => {
-        console.log([e.target.name] +" "+ e.target.value,)
+        console.log([e.target.name] + " " + e.target.value,)
         setValues(prevState => ({
             ...prevState,
-            [e.target.name] : e.target.value,
+            [e.target.name]: e.target.value,
             "propertyModel": {
                 "propertyId": propertyData[0]?.propertyId
             },
-            "registrationModel":{
-                "registrationId":SessionId.registrationId
+            "registrationModel": {
+                "registrationId": SessionId.registrationId
             },
             "price": totalPrice1,
-            "eventPackageId": eventPackage.eventPackageId,
-            "active" : true
+            "eventPackageId": eventPackage.eventPackageId
         }));
     }
+
+
+
+
+    // disable the list of custom dates
+    const customDates = ['2022-07-28', '2022-07-24', '2022-07-22'];
+    const disableCustomDt = current => {
+        console.log(!bookedDates.includes(current.format('YYYY-MM-DD')));
+        return !bookedDates.includes(current.format('YYYY-MM-DD'));
+    }
+
+    // disable past dates
+
+    const yesterday = moment().subtract(1, 'day');
+
+    const disablePastDt = current => {
+        console.log(current.isAfter(yesterday));
+        return current.isAfter(yesterday);
+    };
 
     return (
         <>
@@ -251,48 +291,62 @@ export default function ListProperty() {
                                 </article>
                             </aside>
                         </Col>
-                        
+
                         <Col className="col-4">
                             {role != null &&
-                            <>
-                        {role.role == "[ROLE_User]" ?
-                            <Row className="col-12">
-                                <article className="advance-search">
-                                    <h4>Book Property For Rent</h4>
-                                    <Form>
-                                        <FormGroup>
-                                            <label>Check In</label>
-                                            <Input type="date" name="checkIn" className="form-control" placeholder="Check In" onClick={handleChange} />
-                                        </FormGroup>
-                                        <FormGroup>
-                                            <label>Check Out</label>
-                                            <Input type="date" name="checkOut" className="form-control" placeholder="Check Out" onClick={handleChange} />
-                                        </FormGroup>
-                                        <label>Property Rent & Event Packages Rate</label>
-                                        <hr />
-                                        <article className="_adv_features">
-                                            <ul style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                                <li>Property Rent<span>{"  " + propertyData[0]?.price + "₹"}</span></li>
-                                                {/* {totalPrice1 = propertyData[0]?.price} */}
-                                                {
-                                                    eventPackage.rate != null &&
-                                                    <>
-                                                        <li>Event Package Rate<span>{"  " + eventPackage.rate + "₹"}</span></li>
-                                                        {totalPrice1 = propertyData[0]?.price + eventPackage.rate}
-                                                    </>
-                                                }
-                                                {console.log(totalPrice1)}
-                                            </ul>
-                                        </article>
-                                        <hr />
-                                        <label>Total Payment : ₹<span className="price theme-cl" style={{ float: "right" }}>{totalPrice1}</span></label>
-                                        <Button style={{width:"100%"}} onClick={handleBookingSubmit}>Book it Now</Button>
-                                        {/* <button title="Book It Now" width="100%" height="50px"  type="submit">Send</button> */}
-                                    </Form>
-                                </article>
-                            </Row>
-                            :""}
-                            </>}
+                                <>
+                                    {role.role == "[ROLE_User]" ?
+                                        <Row className="col-12">
+                                            <article className="advance-search">
+                                                <h4>Book Property For Rent</h4>
+                                                <Form>
+                                                    <FormGroup>
+                                                        <label>Check In</label>
+                                                        <DatePicker
+                                                            timeFormat={false}
+                                                            isValidDate={(disableCustomDt)}
+                                                            input={true}
+                                                            min
+                                                            initialViewDate={new Date()}
+                                                            initialValue={new Date()}
+                                                        />
+                                                        {/* <Input type="date" name="checkIn" min={new Date().toISOString().split('T')[0]} className="form-control" placeholder="Check In" onClick={handleChange} /> */}
+                                                    </FormGroup>
+                                                    <FormGroup>
+                                                        <label>Check Out</label>
+                                                        <DatePicker
+                                                            timeFormat={false}
+                                                            isValidDate={disableCustomDt}
+                                                            input={true}
+                                                            initialViewDate={new Date()}
+                                                            initialValue={new Date()}
+                                                        />
+                                                        {/* <Input type="date" name="checkOut" min={new Date().toISOString().split('T')[0]} className="form-control" placeholder="Check Out" onClick={handleChange} /> */}
+                                                    </FormGroup>
+                                                    <label>Property Rent & Event Packages Rate</label>
+                                                    <hr />
+                                                    <article className="_adv_features">
+                                                        <ul style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                            <li>Property Rent<span>{"  " + propertyData[0]?.price + "₹"}</span></li>
+                                                            {/* {totalPrice1 = propertyData[0]?.price} */}
+                                                            {
+                                                                eventPackage.rate != null &&
+                                                                <>
+                                                                    <li>Event Package Rate<span>{"  " + eventPackage.rate + "₹"}</span></li>
+                                                                    <label style={{ display: 'none' }}> {totalPrice1 = propertyData[0]?.price + eventPackage.rate}</label>
+                                                                </>
+                                                            }
+                                                        </ul>
+                                                    </article>
+                                                    <hr />
+                                                    <label style={{ display: 'block' }}>Total Payment : <span className="price theme-cl" style={{ float: "right", fontSize: '20px' }}>{"₹" + totalPrice1}</span></label>
+                                                    <Button style={{ width: "100%" }} onClick={handleBookingSubmit}>Book it Now</Button>
+                                                    {/* <button title="Book It Now" width="100%" height="50px"  type="submit">Send</button> */}
+                                                </Form>
+                                            </article>
+                                        </Row>
+                                        : ""}
+                                </>}
                             <Row className="col-12">
                                 <article className="advance-search">
                                     <h4>Contact Vendor</h4>

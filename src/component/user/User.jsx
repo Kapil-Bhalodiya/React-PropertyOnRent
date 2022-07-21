@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, FormGroup, Input, Row, Col, Button, Modal, ModalHeader, ModalBody, Container } from 'reactstrap';
+import moment from "moment";
 
 
 export default function User() {
@@ -51,7 +52,7 @@ export default function User() {
                             <div class="dashboard-listings-item fl-wrap">
                             <div class="dashboard-listings-item_img">
                                 <div class="bg-wrap">
-                                <img src={"/images1/" + item.propertyModel.photoModel[0].photopath} alt="" style={{ width: "100%" }} />
+                                <img src={"/images1/" + item.propertyModel.photoModel[0].photopath} alt="" style={{ width: "100%",height:"224px" }} />
                                 </div>
                             </div>
                             <div class="dashboard-listings-item_content">
@@ -59,7 +60,8 @@ export default function User() {
                                 <div class="geodir-category-location">
                                     <a href="#"><i class="fas fa-map-marker-alt"></i><span> {item.propertyModel.address} , {item.propertyModel.cityModel.cityName}</span></a>
                                 </div>
-                                <p><b><i className="fa fa-coins icon" /> <label>₹{item.price}/day</label></b></p>
+                                <p><b><i className="fa fa-coins icon" /> <label>₹{item.price}</label></b></p>
+                                <p><b><i className="fa fa-clock icon" /> <label>Booked Date : {moment(item.checkIn).format('YYYY-MM-DD')} To {moment(item.checkOut).format('YYYY-MM-DD')}</label></b></p>   
                                 <div class="dashboard-listings-item_opt">
                                     <span class="viewed-counter"><i class="fas fa-eye"></i> Viewed -  24 </span>
                                     <ul>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Input, Row, Col, Container } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import moment from "moment";
 
 
 export default function Listing() {
@@ -62,7 +63,7 @@ export default function Listing() {
                                     <ul>
                                         <li>Name : <span>{item.registrationModel.firstname + " " +item.registrationModel.firstname}</span></li>
                                         <li>Phone : <span>{item.registrationModel.contactNumber}</span></li>
-                                        <li>Date : <span>{item.checkIn} to {item.checkOut}</span></li>
+                                        <li>Date : <span>{moment(item.checkIn).format('YYYY-MM-DD')} To {moment(item.checkOut).format('YYYY-MM-DD')}</span></li>
                                         <li>Event : <span>{item.eventPackageId}</span></li>
                                     </ul>
                                 </div>
